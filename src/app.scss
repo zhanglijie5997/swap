@@ -1,0 +1,44 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 100vw;
+    min-height: 100vh;
+    header {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        background-color: rgba(9,17,31,.06);
+        backdrop-filter: blur(20px);
+    }
+    main {
+        flex: 1;
+        overflow-y: scroll;
+    }
+    footer {
+        padding-bottom: 10px;
+    }
+    ul {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // padding: ;
+        border-radius: 10px;
+        padding: 20px 0;
+        margin: 10px 20px;
+        background-color: var(--rk-colors-connectButtonBackground);
+        backdrop-filter: blur(20px);
+        li {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
+
+.active {
+    color: var(--wcm-accent-color);
+}
