@@ -81,15 +81,16 @@ const useAbi = () => {
     functionName: "addAward",
   })
 
-  const getUserTokenNumber = async () => {
+  const getUserTokenNumber =  () => {
       const _userBalance = Number(balanceOf.data);
       try {
         console.log(tokenOfOwnerByIndex, "tokenOfOwnerByIndex");
-        tokenOfOwnerByIndex.write({
+        return tokenOfOwnerByIndex.writeAsync({
             args: [address, _userBalance]
         });
       } catch (error) {
         console.log(222);
+        return 0;
       }
   }
 

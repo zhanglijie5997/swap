@@ -1,12 +1,10 @@
-import React from "react";
+import React, {useCallback, useState, useEffect} from "react";
 import { Radio } from "antd";
-import { useState } from "react";
 import "./home.scss";
 import { useStore } from "../../store/store";
-import { useCallback } from "react";
 import useAbi from "../../hook/connect.hook";
-import { useEffect } from "react";
-import { debounce } from "../../utils/utils";
+import { debounce, slepp } from "../../utils/utils";
+import { useAccount } from "wagmi";
 const plainOptions = ["500USDT", "1000USDT"];
 const giveBalance = {
   "[0,0]": 552,
@@ -19,8 +17,10 @@ function Home() {
   const [dayChecked, setDayChecked] = useState(0);
   const [mintStatus, setMintStatus] = useState(false);
   const [loading, setLoading] = useState(false);
+  const {address} = useAccount()
   const connect = useAbi();
   const store = useStore();
+  const [isBusy, setIsBusy] = useState(false);
   const onchange = (value) => {
     console.log(1);
     setChecked(value);
@@ -29,6 +29,19 @@ function Home() {
   const handleDay = (value) => {
     setDayChecked(value);
   };
+
+  const init  = async() => {
+    await slepp(400)
+    const res = await connect.getUserTokenNumber();
+    console.log(res, "resss");
+  }
+
+  useEffect(() => {
+    console.log(address);
+    if (address) {
+      init();
+    }
+  }, [address])
 
   const handleMint = useCallback(debounce(async() => {
     if (loading) return;
@@ -46,10 +59,8 @@ function Home() {
     } finally {
       setLoading(false);
     }
-    
   }, 300), [store.baseData, dayChecked, checked, loading])
 
-  
   return (
     <div className="home">
       <div className="card">
