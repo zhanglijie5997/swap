@@ -1,19 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteImportPlugin from "vite-import-plugin";
+import tailwindcss from  'tailwindcss'
+import autoprefixer from 'autoprefixer'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    ViteImportPlugin({
-      onlyBuild: false,
-      babelImportPluginOptions: [
-        {
-          libraryName: 'antd',
-          libraryDirectory: 'es',
-          style: 'css',
-        },
-      ],
-    }),
     react(),
   ],
   build: {
@@ -31,5 +23,15 @@ export default defineConfig({
           safari10: true, // 解决 Safari 10/11 循环范围和await. 见safari10在选择mangle 和format了解详细信息。
       }
   },
+  server: {
+    host: '0.0.0.0'
+  },
+  css: {
+    postcss: {
+      plugins: [
+        tailwindcss, autoprefixer
+      ]
+    }
+  }
 
 })

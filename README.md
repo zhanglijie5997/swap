@@ -1,8 +1,38 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+第一个mint nft
+用户可用价值500U或者价值1000U的本币来mint一个nft
+这个nft有每天释放USDT的权益 比如：你mint 价值500U本币的 那么可以分30天/60天释放550U/580U/
+
+那么页面展示内容:
+1.剩余可mint数量
+2.选择mint 价值500U的/1000U的
+3.选择mint30天的池子/mint60天的池子
+4.动态展示mint后的每日收益和总收益
+5.当前钱包还未mint：mint按钮
+   当前钱包已经mint：领取收益按钮
+
+第二个 借贷 你要展示的东西 
+存款：
+存入USDT （100-5000U）
+月化收益率(调用第三方合约 计算是否有推广收益 如果有 再加1.5%)
+展示输入USDT后的动态收益
+存入按钮
+分割线----------
+已存入的USDT
+可提取的USDT
+提取按钮
+分割线------------
+存入规则说明
+
+借款：
+借出USDT(100-1000U)
+月化利息率
+所需质押物( 动态计算所需质押多少本币）
+借出按钮
+分割线-----------
+赎回质押物
+展示赎回剩余期限(自借出计起 30天未赎回 质押物自动卖放池子里)
+展示赎回所需支付的USDT
+赎回按钮
