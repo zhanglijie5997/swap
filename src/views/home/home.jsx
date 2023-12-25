@@ -5,11 +5,20 @@ import "./home.scss";
 import { useStore } from "../../store/store";
 import { useCallback } from "react";
 import useAbi from "../../hook/connect.hook";
+import { useEffect } from "react";
+import { debounce } from "../../utils/utils";
 const plainOptions = ["500USDT", "1000USDT"];
+const giveBalance = {
+  "[0,0]": 552,
+  "[0,1]": 1104,
+  "[1,0]": 552,
+  "[1,1]": 1104,
+}
 function Home() {
   const [checked, setChecked] = useState(0);
   const [dayChecked, setDayChecked] = useState(0);
   const [mintStatus, setMintStatus] = useState(false);
+  const [loading, setLoading] = useState(false);
   const connect = useAbi();
   const store = useStore();
   const onchange = (value) => {
@@ -21,19 +30,33 @@ function Home() {
     setDayChecked(value);
   };
 
-  const handleMint = useCallback(() => {
+  const handleMint = useCallback(debounce(async() => {
+    if (loading) return;
+    setLoading(true);
     console.log(store.baseData.state.data.account);
-    console.log(Number((connect.res.data)));
-    console.log(connect);
+    connect.getUserTokenNumber();
+    try {
+      if (dayChecked == 0) {
+        await connect.OneMint.writeAsync()
+      }else {
+        await connect.TwoMint.writeAsync()
+      }
+    } catch (error) {
+      
+    } finally {
+      setLoading(false);
+    }
+    
+  }, 300), [store.baseData, dayChecked, checked, loading])
 
-  }, [store.baseData])
+  
   return (
     <div className="home">
       <div className="card">
         <div className="z-10 relative">
           <p className="border-b title flex justify-between items-end">
             <span>全网质押</span>
-            <span className="text-gray-50 subtitle number">剩余数量：{Number(connect.getUser.data)}</span>
+            <span className="text-gray-50 subtitle number">剩余数量：0</span>
           </p>
           {/* 选择mint 价值500U的/1000U的 */}
           <div className="tabs border-b">
@@ -95,7 +118,7 @@ function Home() {
           {/* 动态展示mint后的每日收益和总收益 */}
           <div>
             <p className="px-2 pt-2 text-gray-50 subtitle">收益额（USDT）:</p>
-            <p className="px-2 pt-2 text-lg font-bold">500USDT</p>
+            <p className="px-2 pt-2 text-lg font-bold">{giveBalance[`[${checked},${dayChecked}]`]}USDT</p>
           </div>
           {/* 当前钱包还未mint：mint按钮  当前钱包已经mint：领取收益按钮*/}
           <button
@@ -104,6 +127,7 @@ function Home() {
               mintStatus ? "btn-success" : "radio-primary btn-outline subtitle "
             }`}
           >
+            { loading ? <span className="loading loading-dots loading-xs"></span> : null}
             {mintStatus ? "领取收益" : "Mint"}
           </button>
         </div>

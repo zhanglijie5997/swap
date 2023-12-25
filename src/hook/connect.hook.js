@@ -1,70 +1,103 @@
 import { useEffect } from "react";
-import { wagmiContract } from "../config/config";
+import { wagmiContract, wagmiContractToken } from "../config/config";
 import { useStore } from "../store/store";
-import { useContractRead, useAccount } from "wagmi";
+import { useContractRead, useAccount, useContractWrite, useChainId } from "wagmi";
+import { usePrepareContractWrite } from "wagmi";
+import { useMemo } from "react";
 
-// interface LendingPool {
-//     //存款合约
-//     function depositMoney(uint256 _Money)external;
-//     //返回存入本金和利息的外部函数
-//     function calculate(address _user)external  view  returns(uint256,uint256);
-//     //取出利息的外部函数
-//     function pickInterest()external   returns  (uint256);
-//     //取出本金和存款利息
-//     function withdrawMoney()external  returns(bool);
-//     //返回池子所有U的数量
-//     function getUser()external view returns(uint256);
-//     //计算获取USDT所需的DK数量的外部函数
-//     function getUsdt(uint256 _usedQuantity)external  view  returns(uint256);
-//     //抵押DK获得usdt
-//     function mortgage_DK(uint256 _usedQuantity)external  returns(uint256);
-//     //赎回DK
-//     function redeem_DK()external;
-//     //池子累计了多少利息
-//     function getAccumulateInterest()external view  returns(uint256);
-//     //返回借usdt数量,质押DK数量,质押的DK区块高度数量,产生的利息
-//     function getLoanUserInformation(address _loansuer)external  view returns(uint256,uint256,uint256,uint256);
-//     //当前池子可存存款的的额度
-//     function getCumulativeLending()external view  returns(uint256);
+// interface IDK {
+//     //这个是500的池子
+//    function OneMint()external;
+//    //这是存1000的
+//    function TwoMint()external;
+//    //取出奖励
+//    function withdrawRewards(uint256 _tokenId)external;
+//    //查看累积奖励数量和奖励天数 -> 收益额
+//     function getAwardQuantity(uint256 _tokenId)external   view   returns(uint256,uint256);
+//    //查看当前奖励剩余天数和每日奖励数量
+//    function getDaysQuantity(uint256 _tokenId)external view   returns (uint256,uint256);
+//    //输入确定数量usdt 获取所需的dk数量
+//    function returnOutput(uint256 _number)external  view  returns(uint256);
+//    //往池子冲奖励 
+//    function addAward(uint256 _totalReward)external returns(uint256);
+//    //返回池子的1总奖励和 2需发放奖励(包含未发放的奖励)和 3池子剩余奖励
+//    function getAward()external view  returns(uint256,uint256,uint256);
+//    这个是传入用户钱包地址 可以获得用户NFT数量
+//    function balanceOf(address _owner) external view returns (uint256);
+//    // 通过地址和索引获得这个是通过钱包地址，和索引 获得用户NFT ID
+//     function tokenOfOwnerByIndex(address owner, uint256 index) external  view returns (uint256) {
+//         require(index < balanceOf(owner), "ERC721Enumerable: owner index out of bounds");//索引值小于当前所有者用的令牌数量
+//         return _ownedTokens[owner][index];
+//     }
+// 
 // }
-const contractAddress = "0xc826b17388BF144De8EF14323c299E0dD01D6CdA";
+const contractAddress = wagmiContractToken;
 /**
  * @returns <{account: string, data: any}>
  */
 const useAbi = () => {
   const store = useStore();
-  const { address } = useAccount();
-  console.log(address);
-  useEffect(() => {
-    
-  }, []);
-  const getUsdt = useContractRead({
-    address: contractAddress,
-    abi: wagmiContract.output.abi,
-    functionName: "getUsdt",
-    args: [10]
+  const { address, connector } = useAccount();
+  const chainId = useChainId();
+  const baseConfig = useMemo(() => {
+    return {
+        address: contractAddress,
+        abi: wagmiContract.output.abi,
+        functionName: "OneMint",
+        chainId
+      }
+  },[address, chainId]) ;
+
+  const OneMint = useContractWrite({
+    ...baseConfig,
+    functionName: "OneMint",
   });
 
-  const getAccumulateInterest = useContractRead({
-    address: contractAddress,
-    abi: wagmiContract.output.abi,
-    functionName: "getAccumulateInterest",
+  const balanceOf = useContractRead({
+    ...baseConfig,
+    functionName: "balanceOf",
+    args: [address]
+  })
+  //   通过地址和索引获得这个是通过钱包地址，和索引 获得用户NFT ID
+
+  const tokenOfOwnerByIndex = useContractWrite({
+    ...baseConfig,
+    functionName: "tokenOfOwnerByIndex",
   })
 
-  const getUser = useContractRead({
-    address: "0xBD86eC6E03e4cb8F73FC7Cfc9111F53dE047982F",
-    abi: wagmiContract.output.abi,
-    functionName: "getUser",
+  const TwoMint = useContractWrite({
+    ...baseConfig,
+    functionName: "TwoMint",
+  })
+  // 看累积奖励数量和奖励天数 -> 收益额
+  const getAwardQuantity = useContractWrite({
+    ...baseConfig,
+    functionName: "getAwardQuantity",
   });
 
-//   const 
+  /** 存钱 */
+  const addAward = useContractWrite({
+    ...baseConfig,
+    functionName: "addAward",
+  })
 
-//   const  useContractWrite
+  const getUserTokenNumber = async () => {
+      const _userBalance = Number(balanceOf.data);
+      try {
+        console.log(tokenOfOwnerByIndex, "tokenOfOwnerByIndex");
+        tokenOfOwnerByIndex.write({
+            args: [address, _userBalance]
+        });
+      } catch (error) {
+        console.log(222);
+      }
+  }
+
+  
+
   return {
-    account: store.baseData.state.data.account,
-    getUsdt,
-    getAccumulateInterest,
-    getUser
+    account: store.baseData.state.data.account, addAward,
+    OneMint, TwoMint,  getAwardQuantity, balanceOf, getUserTokenNumber
   };
 };
 

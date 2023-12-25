@@ -28,7 +28,6 @@ const wagmiConfig = createConfig({
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
     <WagmiConfig config={wagmiConfig}>
       <ConfigProvider
         theme={{
@@ -41,5 +40,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Router />
       </ConfigProvider>
     </WagmiConfig>
-  </React.StrictMode>
 );

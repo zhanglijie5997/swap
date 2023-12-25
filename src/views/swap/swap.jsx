@@ -3,21 +3,86 @@ import "./swap.scss";
 import { useState } from "react";
 import { useRef } from "react";
 import Dialog from "../../components/diglog";
+import useAbi from "../../hook/connect.hook";
+import { useMemo } from "react";
+import useTranslateAbi from "../../hook/translate.hook";
+import { useEffect } from "react";
+import { slepp } from "../../utils/utils";
 function Swap() {
   const [active, setActive] = useState(0);
 
   const [tabList] = useState([{ name: "存款" }, { name: "借款" }]);
+  const [saveValue, setSaveValue] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
+
+  const [giveValue, setGiveValue] = useState("");
+  const [giveLoading, setGiveLoading] = useState(false);
   /** @type {import('react').RefObject<HTMLDivElement>} */
   const dialog = useRef(null)
-
+  const abi = useAbi();
+  const translateAbi = useTranslateAbi();
   const handleSubmit = () => {
     dialog.current.showModal();
   }
 
+  const handleSaveInput = (value) => {
+    const _current = value;
+    setSaveValue(_current);
+  }
+
+  const saveDisabled = useMemo(() => {
+    return +saveValue < 100 || +saveValue > 5000;
+  }, [saveValue])
+
+  // 存入 
+  const handelSave =async () => {
+    if (saveValue == "") {
+      return;
+    }
+    if (+saveValue < -1 || +saveValue == NaN) {
+      return;
+    }
+    try {
+      setSaveLoading(true);
+      await translateAbi.depositMoney.writeAsync({
+        args: [+saveValue]
+      })
+    } catch (error) {
+      
+    } finally {
+      setSaveLoading(false);
+    }
+  }
+
+  // 取出
+  const handleGive = async() => {
+    try {
+      setGiveLoading(true);
+      await abi.withdraw.writeAsync({});
+    } catch (error) {
+      
+    } finally {
+      setGiveLoading(false)
+    }
+  }
 
   const handleConfirm = () => {
     console.log(11);
   }
+
+  const init = async() => {
+    try {
+      await slepp(500)
+      const res = await translateAbi.getLoanUserInformation.writeAsync();
+      // console.log(res);
+    } catch (error) {
+      
+    }
+  }
+
+  useEffect(() => {
+    init();
+  },[])
   return (
     <div className="swap flex flex-col">
       <div role="tablist" className=" tabs tabs-boxed  ">
@@ -46,6 +111,8 @@ function Swap() {
                 placeholder="存入100U-5000U"
                 min={100}
                 max={5000}
+                value={saveValue}
+                onInput={(e) => handleSaveInput(e.currentTarget.value)}
                 className="input w-full input-bordered w-full "
               />
             </div>
@@ -59,7 +126,12 @@ function Swap() {
               </p>
             </div>
             {/* 存入按钮 */}
-            <button className="btn btn-primary w-full mt-2">存入</button>
+            <button 
+              className={`btn btn-primary flex items-center w-full mt-2 ${saveDisabled || saveLoading ? 'btn-disabled': ''}`} 
+              onClick={handelSave}>
+              {saveLoading && <span className="loading loading-dots loading-xs"></span>  }
+               <span>存入</span>
+            </button>
 
             <div className="border-b my-2"></div>
             {/* 已存入的USDT */}
@@ -81,7 +153,10 @@ function Swap() {
               </p>
             </div>
             {/* 提取按钮 */}
-            <button className="btn btn-primary w-full mt-2">提取</button>
+            <button className="btn btn-primary w-full mt-2" onClick={handleGive}>
+              {giveLoading && <span className="loading loading-dots loading-xs"></span>  }
+              <span>提取</span>
+            </button>
 
             <div className="border-b my-2"></div>
             {/* 存入规则说明 */}

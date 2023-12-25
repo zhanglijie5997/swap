@@ -1,3 +1,5 @@
+export const wagmiContractToken = "0xc826b17388BF144De8EF14323c299E0dD01D6CdA";
+
 export const wagmiContract = {
   compiler: {
     version: "0.6.1+commit.e6f7d5a4",
@@ -5,11 +7,6 @@ export const wagmiContract = {
   language: "Solidity",
   output: {
     abi: [
-      {
-        inputs: [],
-        stateMutability: "nonpayable",
-        type: "constructor",
-      },
       {
         anonymous: false,
         inputs: [
@@ -86,6 +83,39 @@ export const wagmiContract = {
         type: "event",
       },
       {
+        inputs: [],
+        name: "OneMint",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [],
+        name: "TwoMint",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_totalReward",
+            type: "uint256",
+          },
+        ],
+        name: "addAward",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
         inputs: [
           {
             internalType: "address",
@@ -136,6 +166,77 @@ export const wagmiContract = {
             internalType: "address",
             name: "",
             type: "address",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [],
+        name: "getAward",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_tokenId",
+            type: "uint256",
+          },
+        ],
+        name: "getAwardQuantity",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_tokenId",
+            type: "uint256",
+          },
+        ],
+        name: "getDaysQuantity",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
           },
         ],
         stateMutability: "view",
@@ -195,6 +296,25 @@ export const wagmiContract = {
         name: "registerInterface",
         outputs: [],
         stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_number",
+            type: "uint256",
+          },
+        ],
+        name: "returnOutput",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
         type: "function",
       },
       {
@@ -311,6 +431,19 @@ export const wagmiContract = {
       {
         inputs: [
           {
+            internalType: "address",
+            name: "_token",
+            type: "address",
+          },
+        ],
+        name: "takeOutToken",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
             internalType: "uint256",
             name: "index",
             type: "uint256",
@@ -387,12 +520,22 @@ export const wagmiContract = {
         stateMutability: "payable",
         type: "function",
       },
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_tokenId",
+            type: "uint256",
+          },
+        ],
+        name: "withdrawRewards",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
     ],
     devdoc: {
       methods: {
-        constructor: {
-          details: "Constructor function.",
-        },
         "totalSupply()": {
           details: "获得令牌总数",
           returns: {
@@ -439,7 +582,7 @@ export const wagmiContract = {
   },
   settings: {
     compilationTarget: {
-      "contracts/ERC721/DK721.sol": "DK721",
+      "contracts/ERC721/DK_Token721.sol": "DK",
     },
     evmVersion: "istanbul",
     libraries: {},
@@ -459,6 +602,22 @@ export const wagmiContract = {
       urls: [
         "bzz-raw://19bd5857d953d5cdf9854e9d9e0eb0df75953138fc8100ae5e506d92ba3f7c78",
         "dweb:/ipfs/QmbTcGE73ymSBEVA9bJBUFCK6wUgz7GemR8PbR9eToqpHz",
+      ],
+    },
+    "contracts/ERC721/DK_Token721.sol": {
+      keccak256:
+        "0x1739c662fb94e9073eb3e478c563fa220eac4deacea6deb880ebe7be4eeb15e5",
+      urls: [
+        "bzz-raw://c37f17fe2f06cf7bdb699bee737f4e5388c3290a10641d173c5f4f751a979c6a",
+        "dweb:/ipfs/QmXRzthhjPUKVtupaW9CUkNHKPtzKvpZdDk9gNE82wcFpL",
+      ],
+    },
+    "contracts/ERC721/GetQuantity.sol": {
+      keccak256:
+        "0x1e3f4e94d33c967c2958b6301fecc284431935fb65a72f6778f10cec2546caef",
+      urls: [
+        "bzz-raw://41f65847c70fc693f4fa67a36f71f42929b7901a94caf165790966dc1f3025ff",
+        "dweb:/ipfs/QmShwpEXwcstMib6km54TwBmukwPS2BsCZU21x3LDDEgxs",
       ],
     },
     "contracts/ERC721/Library/SafeMath.sol": {
