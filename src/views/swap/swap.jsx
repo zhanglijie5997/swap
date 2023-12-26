@@ -17,6 +17,8 @@ function Swap() {
 
   const [giveValue, setGiveValue] = useState("");
   const [giveLoading, setGiveLoading] = useState(false);
+  // 月化利息，质押物
+  const [interest, setInterest] = useState([]);
   /** @type {import('react').RefObject<HTMLDivElement>} */
   const dialog = useRef(null)
   const abi = useAbi();
@@ -70,26 +72,25 @@ function Swap() {
     console.log(11);
   }
 
-  const init = async() => {
+  const handleSetActive = async(i) => {
+    setActive(i)
     try {
-      await slepp(500)
-      const res = await translateAbi.getLoanUserInformation.writeAsync();
-      // console.log(res);
+      if (i == 1) {
+        const res = await translateAbi.getLoanUserInformation.writeAsync()
+      }
     } catch (error) {
       
     }
   }
+  
 
-  useEffect(() => {
-    init();
-  },[])
   return (
     <div className="swap flex flex-col">
       <div role="tablist" className=" tabs tabs-boxed  ">
         {tabList.map((e, i) => (
           <a
             role="tab"
-            onClick={() => setActive(i)}
+            onClick={() => handleSetActive(i)}
             className={`tab tabs-md ${active == i ? "tab-active" : ""}`}
             key={i}
           >
@@ -199,7 +200,7 @@ function Swap() {
             {/* 所需质押物( 动态计算所需质押多少本币） */}
             <div className="px-1 px-2 ">
               <p className="pt-2 text-gray-50 subtitle ">
-                质押物(DOGE):
+                质押物(DK):
               </p>
               <p className="font-bold text-xl pl-2">
                 <span>100</span>
@@ -213,7 +214,7 @@ function Swap() {
             {/* 赎回质押物 */}
             <div className="px-1 px-2 ">
               <p className="pt-2 text-gray-50 subtitle ">
-                赎回质押物(DOGE):
+                赎回质押物(DK):
               </p>
               <p className="font-bold text-xl pl-2">
                 <span>100</span>

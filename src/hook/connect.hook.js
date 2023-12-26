@@ -36,7 +36,6 @@ const contractAddress = wagmiContractToken;
  * @returns <{account: string, data: any}>
  */
 const useAbi = () => {
-  const store = useStore();
   const { address, connector } = useAccount();
   const chainId = useChainId();
   const baseConfig = useMemo(() => {
@@ -53,7 +52,7 @@ const useAbi = () => {
     functionName: "OneMint",
   });
 
-  const balanceOf = useContractRead({
+  const balanceOf = useContractWrite({
     ...baseConfig,
     functionName: "balanceOf",
     args: [address]
@@ -97,7 +96,7 @@ const useAbi = () => {
   
 
   return {
-    account: store.baseData.state.data.account, addAward,
+    addAward,
     OneMint, TwoMint,  getAwardQuantity, balanceOf, getUserTokenNumber
   };
 };
