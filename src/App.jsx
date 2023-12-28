@@ -4,6 +4,7 @@ import {
   ConnectButton,
   RainbowKitProvider,
   darkTheme,
+  lightTheme,
 } from "@rainbow-me/rainbowkit";
 import { useMemo } from "react";
 import i18n from "./i18n/i18n";
@@ -42,18 +43,25 @@ function App() {
     >
       <I18nextProvider instance={i18n}>
         <div className="app">
-          <header>
-            <ConnectButton showBalance></ConnectButton>
+          <header className="flex  w-full h-[90px] sm:h-[60px] justify-between items-center border-y bg-[url('/WaveBG3.png')]">
+            <img src="/WechatIMG1422.jpg" alt="" className="icon h-12 ml-2" />
+            <div className="mr-2">
+              <ConnectButton ></ConnectButton>
+            </div>
           </header>
           <main>
             <Outlet />
           </main>
           <footer>
-            <ul>
-              {tabs.map((e, i) => <li key={i} onClick={() => navigate(`/${e.path}`)} className={`${currentPath == '/' +  e.path ?  'active':''}`}>
-                {t(e.name)}
-              </li>)}
-            </ul>
+            <div className="btm-nav">
+              {
+                tabs.map((e, i) =>
+                  <button className={`${currentPath == '/' + e.path ? 'active':''}`} key={i} onClick={() => navigate(`/${e.path}`)} >
+                    <span className="btm-nav-label">{t(e.name)}</span>
+                  </button>
+                )
+              }
+            </div>
           </footer>
         </div>
       </I18nextProvider>

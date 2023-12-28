@@ -113,8 +113,9 @@ function Swap() {
     // }
     try {
       setSaveLoading(true);
+      console.log(BigInt(+saveValue) , "BigInt(+saveValue) ");
       const res = await translateAbi.depositMoney.writeAsync({
-        args: [+saveValue]
+        args: [BigInt(+saveValue) ]
       })
     } catch (error) {
       message.error({
@@ -195,8 +196,8 @@ function Swap() {
   }, [])
 
   return (
-    <div className="swap flex flex-col">
-      <div role="tablist" className=" tabs tabs-boxed  ">
+    <div className="swap flex flex-col mt-10">
+      <div role="tablist" className=" tabs tabs-boxed  mt-2">
         {tabList.map((e, i) => (
           <a
             role="tab"
