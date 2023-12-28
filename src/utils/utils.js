@@ -30,3 +30,13 @@ export const slepp = (delay) => {
     }, delay);
   })
 }
+
+// 毫秒转换天
+export const msToDay = (ms) => {
+  return (ms / (1000 * 60 * 60 * 24)).toFixed(2)
+}
+
+// 秒转换天
+export const sToDay = (s) => {
+  return (s / (60 * 60 * 24)).toFixed(2)
+}

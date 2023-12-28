@@ -7,19 +7,29 @@ import useAbi from "../../hook/connect.hook";
 import { useMemo } from "react";
 import useTranslateAbi from "../../hook/translate.hook";
 import { useEffect } from "react";
-import { slepp } from "../../utils/utils";
+import { msToDay, sToDay, slepp } from "../../utils/utils";
 import { message } from "antd";
+import { useBlockNumber } from "wagmi";
 function Swap() {
   const [active, setActive] = useState(0);
-
+  const [block, setBlock] = useState(0)
+  const blockNumber = useBlockNumber({
+    staleTime: 2_000,
+    onBlock(blockNumber) {
+      console.log('New block: ', blockNumber)
+      setBlock(Number(blockNumber))
+    },}
+  );
   const [tabList] = useState([{ name: "存款" }, { name: "借款" }]);
   const [saveValue, setSaveValue] = useState("");
   const [saveLoading, setSaveLoading] = useState(false);
-
+  const [redeem, setRedeem] = useState(false);
   const [giveValue, setGiveValue] = useState("");
   const [giveLoading, setGiveLoading] = useState(false);
-  // 月化利息，质押物
-  const [interest, setInterest] = useState([]);
+  // 0.返回借usdt数量,1,质押DK数量,2.质押的DK区块高度数量,3.产生的利息
+  const [interest, setInterest] = useState([0,0,0,0]);
+  // 0.返回存款月化收益，1.邀请人的月化收益 2.以及贷款月化
+  const [getDepositIncomeData, setGetDepositIncomeData] = useState([0,0,0])
   // [已存, 可提取]
   const [drawConfig, setDrawConfig] = useState([0,0])
   /** @type {import('react').RefObject<HTMLDivElement>} */
@@ -75,18 +85,24 @@ function Swap() {
     }
   }
 
-  const handleConfirm = () => {
-    console.log(11);
+  const handleConfirm = async() => {
+    try {
+      setRedeem(true)
+      translateAbi.redeem_DK.writeAsync();
+    } catch (error) {
+      
+    }finally {
+      setRedeem(false)
+
+    }
   }
 
   const handleSetActive = async(i) => {
     setActive(i)
     console.log(i, "iii");
     try {
-      if (i == 1) {
-       const res = await translateAbi.getLoanUserInformation.refetch();
-       console.log(res, "res")
-      }
+      const res = await translateAbi.getLoanUserInformation.refetch();
+      setInterest(res.map(e => Number(e)))
     } catch (error) {
       
     }
@@ -97,7 +113,8 @@ function Swap() {
       await slepp(1000);
       console.log(translateAbi.calculate.data);
       setDrawConfig(translateAbi.calculate.data?.map(e => Number(e)))
-      
+      console.log(translateAbi.getDepositIncome.data, "getDepositIncom", blockNumber);
+      setGetDepositIncomeData(translateAbi.getDepositIncome.data.map(e => Number(e)))
     } catch (error) {
       
     }
@@ -146,7 +163,7 @@ function Swap() {
                 <span>月收益率(USDT):</span>
               </p>
               <p className="font-bold text-xl">
-                <span>100(USDT)</span>
+                <span>{getDepositIncomeData[0]}(USDT)</span>
               </p>
             </div>
             {/* 存入按钮 */}
@@ -216,7 +233,7 @@ function Swap() {
                 月化利息(USDT):
               </p>
               <p className="font-bold text-xl pl-2">
-                <span>100</span>
+                <span>{getDepositIncomeData[2]}</span>
               </p>
             </div>
 
@@ -226,7 +243,7 @@ function Swap() {
                 质押物(DK):
               </p>
               <p className="font-bold text-xl pl-2">
-                <span>100</span>
+                <span>{interest[1]}</span>
               </p>
             </div>
 
@@ -240,7 +257,7 @@ function Swap() {
                 赎回质押物(DK):
               </p>
               <p className="font-bold text-xl pl-2">
-                <span>100</span>
+                <span>{interest[1] + interest[3]}</span>
               </p>
             </div>
             {/* 展示赎回剩余期限(自借出计起 30天未赎回 质押物自动卖放池子里) */}
@@ -250,10 +267,13 @@ function Swap() {
                 <span className="number">赎回所需金额: 200USDT</span>
               </p>
               <p className="font-bold text-xl pl-2 mt-1">
-                <span>100 天</span>
+                <span>{ interest[2] == 0 ?  0: sToDay((block - interest[2]) /3) } 天</span>
               </p>
             </div>
-            <button className="btn btn-primary w-full mt-2" onClick={handleSubmit}>赎回(200USDT)</button>
+            <button className="btn btn-primary w-full mt-2" onClick={handleSubmit}>
+              { redeem && <span className="loading loading-dots loading-xs"></span>}
+              <span>赎回({interest[1] + interest[3]}DK)</span>
+            </button>
             
           </div>
         }

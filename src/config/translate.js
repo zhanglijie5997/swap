@@ -1,4 +1,4 @@
-export const translateAbiToken = "0xf9Df794F45f291F95ECF7F9517ce541A62528c7e";
+export const translateAbiToken = "0xBd51C476CCD87703b36D5168BB9Ab64cACa186ce";
 
 // interface LendingPool {
 //     //存款合约
@@ -23,6 +23,8 @@ export const translateAbiToken = "0xf9Df794F45f291F95ECF7F9517ce541A62528c7e";
 //     function getLoanUserInformation(address _loansuer)external  view returns(uint256,uint256,uint256,uint256);
 //     //当前池子可存存款的的额度
 //     function getCumulativeLending()external view  returns(uint256);
+//返回存款月化收益，和邀请人的月化收益 以及贷款月化
+// function getDepositIncome()external  view  returns(uint256,uint256,uint256);
 // }
 
 export const translateAbiConfig = {
@@ -102,6 +104,48 @@ export const translateAbiConfig = {
         type: "function",
       },
       {
+        inputs: [],
+        name: "getDepositIncome",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "_invitees",
+            type: "address",
+          },
+        ],
+        name: "getInvitersAddress",
+        outputs: [
+          {
+            internalType: "address",
+            name: "",
+            type: "address",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
         inputs: [
           {
             internalType: "address",
@@ -175,6 +219,30 @@ export const translateAbiConfig = {
         type: "function",
       },
       {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_register",
+            type: "uint256",
+          },
+        ],
+        name: "setDepositIncome",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
         inputs: [],
         name: "withdrawMoney",
         outputs: [
@@ -217,11 +285,11 @@ export const translateAbiConfig = {
   sources: {
     "contracts/lendingPool/LendingPool.sol": {
       keccak256:
-        "0x83604d828728f1ba7b60605a9c55f05e1f5770ee88e36e323c01f6615666978d",
+        "0xb8b8acf2bb6510fd881c3b9c11eb5b9bcaf70cabc0b384b4097ac4a847392854",
       license: "GPL-3.0",
       urls: [
-        "bzz-raw://f8a14d56a259d8612a81258f3660680222dd9253008864777f9f3e91d412ca03",
-        "dweb:/ipfs/QmPZyEa65peuTnZS89nZcTyMMKFZxkJYd51NZ28EbpqEDo",
+        "bzz-raw://4ae39f1270c88347e7893bc7dceaa167f31165bb8a2d473540d40d182e91a378",
+        "dweb:/ipfs/Qmbstw1ifFuGf1CnHAmLiLJRZiGViZcaYgjkwiejRUafjk",
       ],
     },
     "contracts/lendingPool/interfaces/IERC20.sol": {
