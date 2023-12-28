@@ -30,12 +30,9 @@ const wagmiConfig = createConfig({
 ReactDOM.createRoot(document.getElementById("root")).render(
     <WagmiConfig config={wagmiConfig}>
       <ConfigProvider
-        theme={{
-          // 1. 单独使用暗色算法
-          algorithm: theme.darkAlgorithm,
-          // 2. 组合使用暗色算法与紧凑算法
-          algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
-        }}
+       theme={{
+        algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
+       }}
       >
         <Router />
       </ConfigProvider>

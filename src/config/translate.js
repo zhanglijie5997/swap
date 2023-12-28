@@ -1,4 +1,4 @@
-export const translateAbiToken = "0xBD86eC6E03e4cb8F73FC7Cfc9111F53dE047982F";
+export const translateAbiToken = "0xf9Df794F45f291F95ECF7F9517ce541A62528c7e";
 
 // interface LendingPool {
 //     //存款合约
@@ -83,8 +83,14 @@ export const translateAbiConfig = {
         type: "function",
       },
       {
-        inputs: [],
-        name: "getCumulativeLending",
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "_usedQuantity",
+            type: "uint256",
+          },
+        ],
+        name: "getDK",
         outputs: [
           {
             internalType: "uint256",
@@ -120,38 +126,6 @@ export const translateAbiConfig = {
             name: "",
             type: "uint256",
           },
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "_usedQuantity",
-            type: "uint256",
-          },
-        ],
-        name: "getUsdt",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getUser",
-        outputs: [
           {
             internalType: "uint256",
             name: "",
@@ -243,11 +217,11 @@ export const translateAbiConfig = {
   sources: {
     "contracts/lendingPool/LendingPool.sol": {
       keccak256:
-        "0x28fb1870ed8af91d5352ce483f786459b8d9530231b3a2211083bab6232acccb",
+        "0x83604d828728f1ba7b60605a9c55f05e1f5770ee88e36e323c01f6615666978d",
       license: "GPL-3.0",
       urls: [
-        "bzz-raw://31c5dd5223fbe6003e8bcf76e84043e22f6a08069361ad49e191ae65c72f102c",
-        "dweb:/ipfs/QmNXAr5jFL5i7QLmM5MLT5EQco4SsbmKScKL9VBSXeKM5B",
+        "bzz-raw://f8a14d56a259d8612a81258f3660680222dd9253008864777f9f3e91d412ca03",
+        "dweb:/ipfs/QmPZyEa65peuTnZS89nZcTyMMKFZxkJYd51NZ28EbpqEDo",
       ],
     },
     "contracts/lendingPool/interfaces/IERC20.sol": {

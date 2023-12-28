@@ -52,7 +52,7 @@ const useAbi = () => {
     functionName: "OneMint",
   });
 
-  const balanceOf = useContractWrite({
+  const balanceOf = useContractRead({
     ...baseConfig,
     functionName: "balanceOf",
     args: [address]
@@ -80,16 +80,17 @@ const useAbi = () => {
     functionName: "addAward",
   })
 
-  const getUserTokenNumber =  () => {
-      const _userBalance = Number(balanceOf.data);
+  const getUserTokenNumber =  async() => {
+    //   const _userBalance = Number(balanceOf.data);
+    console.log(balanceOf, "balanceOf");
       try {
-        console.log(tokenOfOwnerByIndex, "tokenOfOwnerByIndex");
-        return tokenOfOwnerByIndex.writeAsync({
-            args: [address, _userBalance]
-        });
+        console.log( Number(balanceOf.data) , tokenOfOwnerByIndex, address, balanceOf.data, "tokenOfOwnerByIndex");
+        return Number(balanceOf.data) != 0 ? tokenOfOwnerByIndex.writeAsync({
+            args: [address, Number(balanceOf.data) ]
+        }):null;
       } catch (error) {
         console.log(222);
-        return 0;
+        return null;
       }
   }
 

@@ -47,7 +47,8 @@ function Home() {
     if (loading) return;
     setLoading(true);
     console.log(store.baseData.state.data.account);
-    connect.getUserTokenNumber();
+    await connect.getUserTokenNumber();
+    
     try {
       if (dayChecked == 0) {
         await connect.OneMint.writeAsync()

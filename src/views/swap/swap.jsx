@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import useTranslateAbi from "../../hook/translate.hook";
 import { useEffect } from "react";
 import { slepp } from "../../utils/utils";
+import { message } from "antd";
 function Swap() {
   const [active, setActive] = useState(0);
 
@@ -19,6 +20,8 @@ function Swap() {
   const [giveLoading, setGiveLoading] = useState(false);
   // 月化利息，质押物
   const [interest, setInterest] = useState([]);
+  // [已存, 可提取]
+  const [drawConfig, setDrawConfig] = useState([0,0])
   /** @type {import('react').RefObject<HTMLDivElement>} */
   const dialog = useRef(null)
   const abi = useAbi();
@@ -41,16 +44,20 @@ function Swap() {
     if (saveValue == "") {
       return;
     }
-    if (+saveValue < -1 || +saveValue == NaN) {
+    const _value = Number(saveValue);
+    if ((+saveValue < -1 || isNaN(Number(saveValue))) && saveDisabled) {
       return;
     }
     try {
       setSaveLoading(true);
-      await translateAbi.depositMoney.writeAsync({
-        args: [+saveValue]
+      const res = await translateAbi.depositMoney.writeAsync({
+        args: [BigInt(+saveValue)]
       })
     } catch (error) {
-      
+      message.error({
+        duration: 2,
+        content: error.message
+      })
     } finally {
       setSaveLoading(false);
     }
@@ -60,7 +67,7 @@ function Swap() {
   const handleGive = async() => {
     try {
       setGiveLoading(true);
-      await abi.withdraw.writeAsync({});
+      await translateAbi.withdrawMoney.writeAsync();
     } catch (error) {
       
     } finally {
@@ -74,15 +81,31 @@ function Swap() {
 
   const handleSetActive = async(i) => {
     setActive(i)
+    console.log(i, "iii");
     try {
       if (i == 1) {
-        const res = await translateAbi.getLoanUserInformation.writeAsync()
+       const res = await translateAbi.getLoanUserInformation.refetch();
+       console.log(res, "res")
       }
     } catch (error) {
       
     }
   }
   
+  const init = async() => {
+    try {
+      await slepp(1000);
+      console.log(translateAbi.calculate.data);
+      setDrawConfig(translateAbi.calculate.data?.map(e => Number(e)))
+      
+    } catch (error) {
+      
+    }
+  }
+
+  useEffect(() => {
+    init();
+  }, [])
 
   return (
     <div className="swap flex flex-col">
@@ -141,7 +164,7 @@ function Swap() {
                 已存(USDT):
               </p>
               <p className="font-bold text-xl">
-                <span>100</span>
+                <span>{drawConfig[0]}</span>
               </p>
             </div>
             {/* 可提取的USDT */}
@@ -150,7 +173,7 @@ function Swap() {
               可提取(USDT):
               </p>
               <p className="font-bold text-xl">
-                <span>100</span>
+                <span>{drawConfig[1]}</span>
               </p>
             </div>
             {/* 提取按钮 */}

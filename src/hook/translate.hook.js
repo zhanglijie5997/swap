@@ -25,7 +25,7 @@ const useTranslateAbi = () => {
     functionName: "depositMoney",
   });
   // 返回存入本金和利息的外部函数
-  const calculate = useContractWrite({
+  const calculate = useContractRead({
     ...baseConfig,
     functionName: "calculate",
     args: [address],
@@ -41,18 +41,7 @@ const useTranslateAbi = () => {
     functionName: "withdrawMoney",
   });
 
-  // 返回池子所有U的数量
-  const getUser = useContractWrite({
-    ...baseConfig,
-    functionName: "getUser",
-  })
-
-  // 计算获取USDT所需的DK数量的 args: [uint256]
-  const getUsdt = useContractWrite({
-    ...baseConfig,
-    functionName: "getUsdt",
-  })
-
+  
   // 抵押DK获得usdt args: [uint256]
   const mortgage_DK = useContractWrite({
     ...baseConfig,
@@ -69,28 +58,24 @@ const useTranslateAbi = () => {
     functionName: "getAccumulateInterest",
   })
   // 返回借usdt数量,质押DK数量,质押的DK区块高度数量,产生的利息 args: [address]
-  const getLoanUserInformation = useContractWrite({
+  const getLoanUserInformation = useContractRead({
     ...baseConfig,
     functionName: "getLoanUserInformation",
     args: [address]
   })
-  // 当前池子可存存款的的额度
-  const getCumulativeLending = useContractWrite({
-    ...baseConfig,
-    functionName: "getCumulativeLending",
-  })
+  
   return {
     depositMoney,
     calculate,
     pickInterest,
     withdrawMoney,
-    getUser,
-    getUsdt,
+    // getUser,
+    // getUsdt,
     mortgage_DK,
     redeem_DK,
     getAccumulateInterest,
     getLoanUserInformation,
-    getCumulativeLending
+    // getCumulativeLending
   };
 };
 export default useTranslateAbi;
