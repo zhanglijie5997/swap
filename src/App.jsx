@@ -43,7 +43,7 @@ function App() {
     >
       <I18nextProvider instance={i18n}>
         <div className="app">
-          <header className="flex  w-full h-[90px] sm:h-[60px] justify-between items-center border-y bg-[url('/WaveBG3.png')]">
+          <header className="flex glass w-full h-[90px] sm:h-[60px] justify-between items-center border-y bg-[url('/WaveBG3.png')]">
             <img src="/WechatIMG1422.jpg" alt="" className="icon h-12 ml-2" />
             <div className="mr-2">
               <ConnectButton ></ConnectButton>

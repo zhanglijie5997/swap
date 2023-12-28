@@ -119,7 +119,7 @@ function Swap() {
       })
     } catch (error) {
       message.error({
-        duration: 2,
+        duration: 3,
         content: error.message
       })
     } finally {
