@@ -166,7 +166,9 @@ function Swap() {
     try {
       await slepp(1000);
       console.log(translateAbi.calculate.data);
-      setDrawConfig(translateAbi.calculate.data?.map(e => Number(e)))
+      if (translateAbi.calculate.data) {
+        setDrawConfig(translateAbi.calculate.data?.map(e => Number(e)))
+      }
       console.log("getDepositIncom");
       console.log(allowance, Number(allowance.data), "res----");
       // await approve.writeAsync()
