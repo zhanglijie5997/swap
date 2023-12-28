@@ -1,5 +1,9 @@
 export const wagmiContractToken = "0xc826b17388BF144De8EF14323c299E0dD01D6CdA";
 
+export const dkAddress = "0xb5f6e4236591d1e68d93a40e24ebfe9e7cee7f7b";
+
+export const usdtAddress = "0x55d398326f99059ff775485246999027b3197955";
+
 export const wagmiContract = {
   compiler: {
     version: "0.6.1+commit.e6f7d5a4",

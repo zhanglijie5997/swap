@@ -9,7 +9,7 @@ import { publicProvider } from 'wagmi/providers/public';
 import { ConfigProvider, theme } from "antd";
 import Router from "./router/router.jsx";
 const { chains, publicClient } = configureChains(
-  [bsc],
+  [bsc, mainnet],
   [
     publicProvider()
   ]

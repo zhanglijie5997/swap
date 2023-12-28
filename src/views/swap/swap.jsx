@@ -1,15 +1,19 @@
 import React from "react";
 import "./swap.scss";
-import { useState } from "react";
-import { useRef } from "react";
+import { useState , useRef, useMemo} from "react";
 import Dialog from "../../components/diglog";
 import useAbi from "../../hook/connect.hook";
-import { useMemo } from "react";
 import useTranslateAbi from "../../hook/translate.hook";
 import { useEffect } from "react";
 import { msToDay, sToDay, slepp } from "../../utils/utils";
 import { message } from "antd";
-import { useBlockNumber } from "wagmi";
+import { useBlockNumber, useToken } from "wagmi";
+import { erc20ABI, useErc20Allowance, useErc20ApprovalEvent, useErc20Approve, useErc20Read, usePrepareErc20Approve } from "../../generated";
+import { useAccount } from "wagmi";
+import { useChainId } from "wagmi";
+import { parseUnits } from "viem";
+import { useContractWrite } from "wagmi";
+import { dkAddress, usdtAddress } from "../../config/config";
 function Swap() {
   const [active, setActive] = useState(0);
   const [block, setBlock] = useState(0)
@@ -35,7 +39,12 @@ function Swap() {
   /** @type {import('react').RefObject<HTMLDivElement>} */
   const dialog = useRef(null)
   const abi = useAbi();
+  const chainId = useChainId();
+  const { address } = useAccount();
   const translateAbi = useTranslateAbi();
+  const [authorizationed, setAuthorizationed] = useState(true);
+
+
   const handleSubmit = () => {
     dialog.current.showModal();
   }
@@ -45,23 +54,67 @@ function Swap() {
     setSaveValue(_current);
   }
 
+  const allowance = useErc20Allowance({
+    address: usdtAddress,
+    args: [address,usdtAddress],
+    chainId,
+    onSuccess(v) {
+      console.log(v);
+    },
+    onError(e) {
+      console.log(e, "eee");
+    }
+  })
+
+  const authorizationStatus = useMemo(() => {
+    return Number(allowance.data) == 0 || !authorizationed;
+  }, [allowance.data, authorizationed])
+
+
+  const dkAllowance = useErc20Allowance({
+    address: dkAddress,
+    args: [address,dkAddress],
+    chainId,
+    onSuccess(v) {
+      console.log(v);
+    },
+    onError(e) {
+      console.log(e, "eee");
+    }
+  })
+
+  const approveDK = useContractWrite({
+    address: dkAddress,
+    abi: erc20ABI,
+    functionName: "approve",
+    args: [dkAddress, parseUnits('100', 9)],
+  })
+  
+  const approve = useContractWrite({
+    address: usdtAddress,
+    abi: erc20ABI,
+    functionName: "approve",
+    args: [usdtAddress, parseUnits('100', 9)],
+  })
+
+
   const saveDisabled = useMemo(() => {
     return +saveValue < 100 || +saveValue > 5000;
   }, [saveValue])
 
   // 存入 
   const handelSave =async () => {
-    if (saveValue == "") {
-      return;
-    }
-    const _value = Number(saveValue);
-    if ((+saveValue < -1 || isNaN(Number(saveValue))) && saveDisabled) {
-      return;
-    }
+    // if (saveValue == "") {
+    //   return;
+    // }
+    // const _value = Number(saveValue);
+    // if ((+saveValue < -1 || isNaN(Number(saveValue))) && saveDisabled) {
+    //   return;
+    // }
     try {
       setSaveLoading(true);
       const res = await translateAbi.depositMoney.writeAsync({
-        args: [BigInt(+saveValue)]
+        args: [+saveValue]
       })
     } catch (error) {
       message.error({
@@ -113,10 +166,27 @@ function Swap() {
       await slepp(1000);
       console.log(translateAbi.calculate.data);
       setDrawConfig(translateAbi.calculate.data?.map(e => Number(e)))
-      console.log(translateAbi.getDepositIncome.data, "getDepositIncom", blockNumber);
+      console.log("getDepositIncom");
+      console.log(allowance, Number(allowance.data), "res----");
+      // await approve.writeAsync()
+
       setGetDepositIncomeData(translateAbi.getDepositIncome.data.map(e => Number(e)))
     } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const authorization = async() => {
+    try {
+      await approve.writeAsync({
+        
+      });
+      // await approveDK.writeAsync();
+    } catch (error) {
       
+    } finally {
+      allowance.refetch();
+      setAuthorizationed(Number(allowance.data) > 0)
     }
   }
 
@@ -167,12 +237,13 @@ function Swap() {
               </p>
             </div>
             {/* 存入按钮 */}
-            <button 
-              className={`btn btn-primary flex items-center w-full mt-2 ${saveDisabled || saveLoading ? 'btn-disabled': ''}`} 
+            { authorizationStatus ?  <button className="btn btn-primary flex items-center w-full mt-2" onClick={authorization}>授权</button> :  <button 
+            //  saveDisabled || saveLoading
+             className={`btn btn-primary flex items-center w-full mt-2 ${ false? 'btn-disabled': ''}`} 
               onClick={handelSave}>
               {saveLoading && <span className="loading loading-dots loading-xs"></span>  }
                <span>存入</span>
-            </button>
+            </button>}
 
             <div className="border-b my-2"></div>
             {/* 已存入的USDT */}
@@ -267,7 +338,7 @@ function Swap() {
                 <span className="number">赎回所需金额: 200USDT</span>
               </p>
               <p className="font-bold text-xl pl-2 mt-1">
-                <span>{ interest[2] == 0 ?  0: sToDay((block - interest[2]) /3) } 天</span>
+                <span>{ interest[2] == 0 ?  0: sToDay((block - interest[2]) * 3) } 天</span>
               </p>
             </div>
             <button className="btn btn-primary w-full mt-2" onClick={handleSubmit}>

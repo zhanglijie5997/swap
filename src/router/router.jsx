@@ -6,7 +6,7 @@ import {
 import Home from "../views/home/home";
 import Swap from "../views/swap/swap";
 import Layout from "../App";
-
+import Test from "../views/test/test";
 export const routerName = {
   home: "",
   swap: "swap",
@@ -24,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "swap",
         element: <Swap />,
+      },
+      {
+        path: "test",
+        element: <Test />,
       },
     ],
   },
