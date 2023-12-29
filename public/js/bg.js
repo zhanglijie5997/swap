@@ -48,7 +48,7 @@ var CanvasParticle = (function(){
 		// body.replaceChild(canvas.element, canvasDiv);
 		body.appendChild(canvas.element);
 
-		canvas.element.style = "position: fixed; top: 0; left: 0;";
+		canvas.element.style = "position: fixed; top: 0; left: 0;pointer-events: none;";
 		canvasSize(canvas.element);
 		window.onresize = function(){
 			canvasSize(canvas.element);

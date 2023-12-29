@@ -204,7 +204,7 @@ function Swap() {
           <a
             role="tab"
             onClick={() => handleSetActive(i)}
-            className={`tab tabs-md ${active == i ? "tab-active" : ""}`}
+            className={`tab tabs-md text-white ${active == i ? "tab-active" : ""}`}
             key={i}
           >
             {e.name}
@@ -217,7 +217,7 @@ function Swap() {
           <div className="z-50 pb-4">
             {/* 存入USDT （100-5000U） */}
             <div className="px-1">
-              <p className="px-2 pt-2 text-gray-50 subtitle mb-2">
+              <p className="px-2 pt-2 text-gray-50 subtitle mb-2 ">
                 存入(USDT):
               </p>
               <input
@@ -242,7 +242,7 @@ function Swap() {
             {/* 存入按钮 */}
             { authorizationStatus ?  <button className="btn btn-primary flex items-center w-full mt-2" onClick={authorization}>授权</button> :  <button 
             //  saveDisabled || saveLoading
-             className={`btn btn-primary flex items-center w-full mt-2 ${ false? 'btn-disabled': ''}`} 
+             className={`btn btn-primary  flex items-center w-full mt-2 ${ false? 'btn-disabled': ''}`} 
               onClick={handelSave}>
               {saveLoading && <span className="loading loading-dots loading-xs"></span>  }
                <span>存入</span>
