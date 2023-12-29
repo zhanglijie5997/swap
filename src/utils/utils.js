@@ -44,3 +44,6 @@ export const sToDay = (s) => {
 export const parse18 = (v) => v * 10 ** 18;
 
 export const unParse18 = (v) => v / 10 ** 18;
+
+// usdt数量 / 价格 / 40% = 所需质押dk数量
+export const pledgeDKNumber = (v, price) => v / price / 0.4;

@@ -79,6 +79,11 @@ const useAbi = () => {
     ...baseConfig,
     functionName: "addAward",
   })
+  // 返回池子的1总奖励和 2需发放奖励(包含未发放的奖励)和 3池子剩余奖励
+  const getAward = useContractRead({
+    ...baseConfig,
+    functionName: "getAward",
+  })
 
   const getUserTokenNumber =  async() => {
     //   const _userBalance = Number(balanceOf.data);
@@ -97,7 +102,7 @@ const useAbi = () => {
   
 
   return {
-    addAward,
+    addAward, getAward,
     OneMint, TwoMint,  getAwardQuantity, balanceOf, getUserTokenNumber
   };
 };

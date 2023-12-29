@@ -2,7 +2,12 @@ import axios from "axios";
 import { redirect } from "react-router-dom";
 import httpConfig from "../config/http.config";
 
+const cache = new Map();
+
+
 const httpCache = new Map();
+
+
 
 const axiosInit = axios.create({
 	timeout: 20000,
@@ -20,6 +25,7 @@ axiosInit.interceptors.request.use((_) => {
 	
 	return _;
 });
+
 
 axiosInit.interceptors.response.use(
 	(_) => {
@@ -74,6 +80,7 @@ axiosInit.interceptors.response.use(
 		switch (status) {
 			case 401:
                 localStorage.clear();
+                message.error('登陆过期,请重新登陆')
                 // location.href = location.origin + "/login";
 				break;
 			default:
@@ -84,8 +91,8 @@ axiosInit.interceptors.response.use(
 
 const requestIntercept = (
 	url
-) => {
-	const _ = cache.get(url);
+)=> {
+	const _ =  cache.get(url);
 	const time = Date.now();
 	const isRequest = httpCache.get(url);
 	if (typeof isRequest != undefined) {
@@ -94,7 +101,7 @@ const requestIntercept = (
 		}
 	}
 	if (_) {
-		const __ = _;
+		const __ = _
 		if (time < (__.time ?? 0) + 1000) {
 			cache.set(url, {
 				..._,
@@ -108,6 +115,7 @@ const requestIntercept = (
 		return url;
 	}
 };
+
 /**
  * 
  * @param {*} url 

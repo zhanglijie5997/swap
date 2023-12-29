@@ -24,7 +24,14 @@ export default defineConfig({
       }
   },
   server: {
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    proxy: {
+      '/api': {
+        target: 'http://68.178.171.224:8601/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
   },
   css: {
     postcss: {
@@ -32,6 +39,7 @@ export default defineConfig({
         tailwindcss, autoprefixer
       ]
     }
-  }
+  },
+
 
 })

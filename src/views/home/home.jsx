@@ -5,6 +5,12 @@ import { useStore } from "../../store/store";
 import useAbi from "../../hook/connect.hook";
 import { debounce, slepp } from "../../utils/utils";
 import { useAccount } from "wagmi";
+import { dkAddress, usdtAddress, wagmiContractToken } from "../../config/config";
+import { erc20ABI, useErc20Allowance } from "../../generated";
+import { useChainId } from "wagmi";
+import { useContractWrite } from "wagmi";
+import { maxUint256 } from "viem";
+import { useMemo } from "react";
 const plainOptions = ["500USDT", "1000USDT"];
 const giveBalance = {
   "[0,0]": 552,
@@ -21,6 +27,11 @@ function Home() {
   const connect = useAbi();
   const store = useStore();
   const [isBusy, setIsBusy] = useState(false);
+  const chainId = useChainId();
+  const getAward = useMemo(() => {
+    console.log(connect.getAward.data, "connect.getAward.data;");
+    return connect.getAward.data ? connect.getAward.data.map(e => e.toString()): [0,0,0];
+  }, [connect.getAward.data])
   const onchange = (value) => {
     console.log(1);
     setChecked(value);
@@ -42,6 +53,34 @@ function Home() {
       init();
     }
   }, [address])
+
+  const usdtAllowance = useErc20Allowance({
+    address: dkAddress,
+    args: [address,wagmiContractToken],
+    chainId,
+    onSuccess(v) {
+      console.log(v);
+    },
+    onError(e) {
+      console.log(e, "eee");
+    }
+  })
+
+  const approve = useContractWrite({
+    address: dkAddress,
+    abi: erc20ABI,
+    functionName: "approve",
+    args: [wagmiContractToken, maxUint256],
+  })
+
+  const handleAuthorization = async() => {
+    try {
+      await approve.writeAsync();
+      usdtAllowance.refetch();
+    } catch (error) {
+      
+    }
+  }
 
   const handleMint = useCallback(debounce(async() => {
     if (loading) return;
@@ -68,7 +107,7 @@ function Home() {
         <div className="z-10 relative">
           <p className="border-b title flex justify-between items-end">
             <span>全网质押</span>
-            <span className="text-gray-50 subtitle number">剩余数量：0</span>
+            <span className="text-gray-50 subtitle number">剩余数量：{getAward[2]}</span>
           </p>
           {/* 选择mint 价值500U的/1000U的 */}
           <div className="tabs border-b">
@@ -133,7 +172,8 @@ function Home() {
             <p className="px-2 pt-2 text-lg font-bold">{giveBalance[`[${checked},${dayChecked}]`]}USDT</p>
           </div>
           {/* 当前钱包还未mint：mint按钮  当前钱包已经mint：领取收益按钮*/}
-          <button
+          {
+            usdtAllowance.data == 0 ? <button className="btn btn-primary w-full mx-auto mt-2" onClick={handleAuthorization}>授权</button> :<button
             onClick={handleMint}
             className={`btn btn-primary w-full mx-auto mt-2  flex justify-center items-center ${
               mintStatus ? "btn-success" : "radio-primary  "
@@ -142,6 +182,8 @@ function Home() {
             { loading ? <span className="loading loading-dots loading-xs"></span> : null}
             {mintStatus ? "领取收益" : "Mint"}
           </button>
+          }
+          
         </div>
       </div>
     </div>

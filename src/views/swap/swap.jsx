@@ -16,6 +16,7 @@ import { useContractWrite } from "wagmi";
 import { dkAddress, usdtAddress } from "../../config/config";
 import { translateAbiToken } from "../../config/translate";
 import Anthorization from "../../components/anthorization";
+import { getCoin } from "../../service/service";
 function Swap() {
   const [active, setActive] = useState(0);
   const [block, setBlock] = useState(0)
@@ -102,7 +103,6 @@ function Swap() {
   const authorizationDK = async() => {
     try {
       await approveDK.writeAsync({
-        args: [parse18(lendoutData) ]
       })
     } catch (error) {
       
@@ -170,15 +170,17 @@ function Swap() {
     setActive(i)
     console.log(i, "iii");
     try {
-      const res = await translateAbi.getLoanUserInformation.refetch();
-      setInterest(res.map(e => Number(e)))
+      await translateAbi.getLoanUserInformation.refetch();
+      setInterest(translateAbi.getLoanUserInformation.data.map(e => e.toString()))
+      console.log(translateAbi.getLoanUserInformation.data, "res");
     } catch (error) {
-      
+      console.log(error);
     }
   }
   
   const init = async() => {
     try {
+      
       await slepp(1000);
       console.log(dkAllowance.data,"已存");
       // 收益率
@@ -230,8 +232,14 @@ function Swap() {
     })
   }
 
+  const getCoinPrice = async () => {
+    const res = await getCoin();
+    console.log(res);
+  }
+
   useEffect(() => {
     init();
+    getCoinPrice();
   }, [])
 
   return (
@@ -352,10 +360,10 @@ function Swap() {
             {/* 月化利息率 */}
             <div className="px-1 px-2 ">
               <p className="pt-2 text-gray-50 subtitle ">
-                月化利息(USDT):
+                月化利息(%):
               </p>
               <p className="font-bold text-xl pl-2">
-                <span>{getDepositIncomeData[2]}</span>
+                <span>5.5%</span>
               </p>
             </div>
 
@@ -388,16 +396,19 @@ function Swap() {
             <div className="px-1 px-2 ">
               <p className="pt-2 text-gray-50 subtitle flex justify-between">
                 <span>剩余期限(天):</span> 
-                <span className="number">赎回所需金额: 200USDT</span>
+                {/* <span className="number">赎回所需金额: 200USDT</span> */}
               </p>
               <p className="font-bold text-xl pl-2 mt-1">
-                <span>{ interest[2] == 0 ?  0: sToDay((block - interest[2]) * 3) } 天</span>
+                <span>{ interest[2] == 0 ?  0: 30 - Number(sToDay((block - interest[2]) * 3))  } 天</span>
               </p>
             </div>
-            <button className="btn btn-primary w-full mt-2" onClick={handleSubmit}>
-              { redeem && <span className="loading loading-dots loading-xs"></span>}
-              <span>赎回({interest[1] + interest[3]}DK)</span>
-            </button>
+            {
+              dkAllowance.data == 0 ?<button className="btn btn-primary flex items-center w-full mt-2" onClick={authorizationDK}>授权</button> :<button className="btn btn-primary w-full mt-2" onClick={handleSubmit}>
+                { redeem && <span className="loading loading-dots loading-xs"></span>}
+                <span>赎回({interest[1] + interest[3]}DK)</span>
+              </button>
+            }
+            
             
           </div>
         }
