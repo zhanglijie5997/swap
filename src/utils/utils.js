@@ -40,3 +40,7 @@ export const msToDay = (ms) => {
 export const sToDay = (s) => {
   return (s / (60 * 60 * 24)).toFixed(2)
 }
+
+export const parse18 = (v) => v * 10 ** 18;
+
+export const unParse18 = (v) => v / 10 ** 18;

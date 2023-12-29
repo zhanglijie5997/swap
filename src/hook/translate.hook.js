@@ -64,11 +64,11 @@ const useTranslateAbi = () => {
     args: [address]
   })
   // 返回存款月化收益，和邀请人的月化收益 以及贷款月化
-  const getDepositIncome = useContractRead({
-    ...baseConfig,
-    functionName: "getDepositIncome",
-  })
-
+  // const getDepositIncome = useContractRead({
+  //   ...baseConfig,
+  //   functionName: "getDepositIncome",
+  // })
+  // 获取月化收益率
   const getInterestRate = useContractRead({
     ...baseConfig,
     functionName: "getInterestRate",

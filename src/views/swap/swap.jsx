@@ -5,16 +5,17 @@ import Dialog from "../../components/diglog";
 import useAbi from "../../hook/connect.hook";
 import useTranslateAbi from "../../hook/translate.hook";
 import { useEffect } from "react";
-import { msToDay, sToDay, slepp } from "../../utils/utils";
+import { msToDay, parse18, sToDay, slepp, unParse18 } from "../../utils/utils";
 import { message } from "antd";
 import { useBlockNumber, useToken } from "wagmi";
 import { erc20ABI, useErc20Allowance, useErc20ApprovalEvent, useErc20Approve, useErc20Read, usePrepareErc20Approve } from "../../generated";
 import { useAccount } from "wagmi";
 import { useChainId } from "wagmi";
-import { parseUnits } from "viem";
+import { maxUint256, parseUnits } from "viem";
 import { useContractWrite } from "wagmi";
 import { dkAddress, usdtAddress } from "../../config/config";
 import { translateAbiToken } from "../../config/translate";
+import Anthorization from "../../components/anthorization";
 function Swap() {
   const [active, setActive] = useState(0);
   const [block, setBlock] = useState(0)
@@ -43,7 +44,8 @@ function Swap() {
   const { address } = useAccount();
   const translateAbi = useTranslateAbi();
   const [authorizationed, setAuthorizationed] = useState(true);
-
+    // 借钱输入框
+  const [lendoutData, setLendoutData] = useState('');
 
   const handleSubmit = () => {
     dialog.current.showModal();
@@ -70,7 +72,7 @@ function Swap() {
     address: usdtAddress,
     abi: erc20ABI,
     functionName: "approve",
-    args: [translateAbiToken, parseUnits('1000', 9)],
+    args: [translateAbiToken, maxUint256],
   })
 
   const authorizationStatus = useMemo(() => {
@@ -80,7 +82,7 @@ function Swap() {
 
   const dkAllowance = useErc20Allowance({
     address: dkAddress,
-    args: [address,dkAddress],
+    args: [address,translateAbiToken],
     chainId,
     onSuccess(v) {
       console.log(v);
@@ -94,15 +96,25 @@ function Swap() {
     address: dkAddress,
     abi: erc20ABI,
     functionName: "approve",
-    args: [dkAddress, parseUnits('100', 9)],
+    args: [translateAbiToken, maxUint256],
   })
-  
-  
 
+  const authorizationDK = async() => {
+    try {
+      await approveDK.writeAsync({
+        args: [parse18(lendoutData) ]
+      })
+    } catch (error) {
+      
+    }finally {
+      dkAllowance.refetch();
+    }
+  }
 
   const saveDisabled = useMemo(() => {
     return +saveValue < 100 || +saveValue > 5000;
   }, [saveValue])
+
 
   // 存入 
   const handelSave =async () => {
@@ -168,14 +180,24 @@ function Swap() {
   const init = async() => {
     try {
       await slepp(1000);
-      console.log(translateAbi.calculate.data, "已存");
+      console.log(dkAllowance.data,"已存");
+      // 收益率
+      const _ = Number(translateAbi.getInterestRate.data) / 10000 * Number(translateAbi.calculate.data[0])  / 10 ** 18; 
+      setGetDepositIncomeData((value) => {
+        return value.map((e, i) => {
+          if (i == 0) {
+            return _
+          }
+          return e;
+        })
+      })
       if (translateAbi.calculate.data) {
       
         setDrawConfig(translateAbi.calculate.data?.map((e, i) => {
           if (i != 0) {
             return Number(e)
           }
-          return Number(e) / 10 ** 18;
+          return unParse18(Number(e)) ;
         }))
       }
       console.log("getDepositIncom");
@@ -200,6 +222,12 @@ function Swap() {
       allowance.refetch();
       setAuthorizationed(Number(allowance.data) > 0)
     }
+  }
+
+  const lendout = async() => {
+    await translateAbi.mortgage_DK.writeAsync({
+      args: [parse18(lendoutData)]
+    })
   }
 
   useEffect(() => {
@@ -249,13 +277,21 @@ function Swap() {
               </p>
             </div>
             {/* 存入按钮 */}
-            { authorizationStatus ?  <button className="btn btn-primary flex items-center w-full mt-2" onClick={authorization}>授权</button> :  <button 
-            //  saveDisabled || saveLoading
+            <Anthorization>
+              <button 
+              //  saveDisabled || saveLoading
+              className={`btn btn-primary  flex items-center w-full mt-2 ${ false? 'btn-disabled': ''}`} 
+                onClick={handelSave}>
+                {saveLoading && <span className="loading loading-dots loading-xs"></span>  }
+                <span>存入</span>
+              </button>
+            </Anthorization>
+            {/* { authorizationStatus ?  <button className="btn btn-primary flex items-center w-full mt-2" onClick={authorization}>授权</button> :  <button 
              className={`btn btn-primary  flex items-center w-full mt-2 ${ false? 'btn-disabled': ''}`} 
               onClick={handelSave}>
               {saveLoading && <span className="loading loading-dots loading-xs"></span>  }
                <span>存入</span>
-            </button>}
+            </button>} */}
 
             <div className="border-b my-2"></div>
             {/* 已存入的USDT */}
@@ -273,15 +309,16 @@ function Swap() {
               可提取(USDT):
               </p>
               <p className="font-bold text-xl">
-                <span>{drawConfig[1]}</span>
+                <span>{drawConfig[1] + drawConfig[0]}</span>
               </p>
             </div>
             {/* 提取按钮 */}
-            <button className="btn btn-primary w-full mt-2" onClick={handleGive}>
-              {giveLoading && <span className="loading loading-dots loading-xs"></span>  }
-              <span>提取</span>
-            </button>
-
+            <Anthorization>
+              <button className="btn btn-primary w-full mt-2" onClick={handleGive}>
+                {giveLoading && <span className="loading loading-dots loading-xs"></span>  }
+                <span>提取</span>
+              </button>
+            </Anthorization>
             <div className="border-b my-2"></div>
             {/* 存入规则说明 */}
             <div className="px-1">
@@ -307,6 +344,8 @@ function Swap() {
                 placeholder="借出100U-5000U"
                 min={100}
                 max={1000}
+                value={lendoutData}
+                onInput={(v) => setLendoutData(v.currentTarget.value)}
                 className="input w-full input-bordered w-full "
               />
             </div>
@@ -330,8 +369,10 @@ function Swap() {
               </p>
             </div>
 
-            {/* 借出按钮 */}
-            <button className="btn btn-primary w-full mt-2">借出</button>
+            {/* 借出按钮 先授权*/}
+            {
+              dkAllowance.data == 0 ? <button className="btn btn-primary flex items-center w-full mt-2" onClick={authorizationDK}>授权</button> : <button className="btn btn-primary w-full mt-2" onClick={lendout}>借出</button>
+            } 
             <div className="border-b my-2"></div>
 
             {/* 赎回质押物 */}
