@@ -68,6 +68,12 @@ const useTranslateAbi = () => {
     ...baseConfig,
     functionName: "getDepositIncome",
   })
+
+  const getInterestRate = useContractRead({
+    ...baseConfig,
+    functionName: "getInterestRate",
+    args: [address]
+  })
   
   return {
     depositMoney,
@@ -80,7 +86,7 @@ const useTranslateAbi = () => {
     redeem_DK,
     getAccumulateInterest,
     getLoanUserInformation,
-    getDepositIncome,
+    getInterestRate
     // getCumulativeLending
   };
 };

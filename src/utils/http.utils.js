@@ -108,7 +108,12 @@ const requestIntercept = (
 		return url;
 	}
 };
-
+/**
+ * 
+ * @param {*} url 
+ * @param {*} params 
+ * @returns {Promise<any>}
+ */
 export const get = (url, params) =>
 	typeof requestIntercept(url) === "string"
 		? axiosInit({

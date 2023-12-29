@@ -1,4 +1,4 @@
-export const translateAbiToken = "0xBd51C476CCD87703b36D5168BB9Ab64cACa186ce";
+export const translateAbiToken = "0x2F632D509589e9f67a7df46E42014D104a15CC83";
 
 // interface LendingPool {
 //     //存款合约
@@ -54,8 +54,13 @@ export const translateAbiConfig = {
             name: "",
             type: "uint256",
           },
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
         ],
-        stateMutability: "view",
+        stateMutability: "nonpayable",
         type: "function",
       },
       {
@@ -73,45 +78,8 @@ export const translateAbiConfig = {
       },
       {
         inputs: [],
-        name: "getAccumulateInterest",
+        name: "getDkAndUsdtQuantity",
         outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "_usedQuantity",
-            type: "uint256",
-          },
-        ],
-        name: "getDK",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getDepositIncome",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
           {
             internalType: "uint256",
             name: "",
@@ -130,16 +98,35 @@ export const translateAbiConfig = {
         inputs: [
           {
             internalType: "address",
-            name: "_invitees",
+            name: "_user",
             type: "address",
           },
         ],
-        name: "getInvitersAddress",
+        name: "getInterestRate",
         outputs: [
           {
-            internalType: "address",
+            internalType: "uint256",
             name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "_user",
             type: "address",
+          },
+        ],
+        name: "getLoanInterest",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
           },
         ],
         stateMutability: "view",
@@ -183,7 +170,7 @@ export const translateAbiConfig = {
         inputs: [
           {
             internalType: "uint256",
-            name: "_usedQuantity",
+            name: "_usdtQuantity",
             type: "uint256",
           },
         ],
@@ -199,7 +186,13 @@ export const translateAbiConfig = {
         type: "function",
       },
       {
-        inputs: [],
+        inputs: [
+          {
+            internalType: "address",
+            name: "_user",
+            type: "address",
+          },
+        ],
         name: "pickInterest",
         outputs: [
           {
@@ -215,30 +208,6 @@ export const translateAbiConfig = {
         inputs: [],
         name: "redeem_DK",
         outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "_register",
-            type: "uint256",
-          },
-        ],
-        name: "setDepositIncome",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
         stateMutability: "nonpayable",
         type: "function",
       },
@@ -269,7 +238,7 @@ export const translateAbiConfig = {
   },
   settings: {
     compilationTarget: {
-      "contracts/lendingPool/LendingPool.sol": "lendingPool",
+      "contracts/DKLOAN/loan.sol": "loan",
     },
     evmVersion: "london",
     libraries: {},
@@ -283,40 +252,40 @@ export const translateAbiConfig = {
     remappings: [],
   },
   sources: {
-    "contracts/lendingPool/LendingPool.sol": {
+    "contracts/DKLOAN/interface/IERC20.sol": {
       keccak256:
-        "0xb8b8acf2bb6510fd881c3b9c11eb5b9bcaf70cabc0b384b4097ac4a847392854",
+        "0x64736e7ca5d9168cd868d67be559c48eb1a9318cfb6952d945e2bf99a5b8454f",
       license: "GPL-3.0",
       urls: [
-        "bzz-raw://4ae39f1270c88347e7893bc7dceaa167f31165bb8a2d473540d40d182e91a378",
-        "dweb:/ipfs/Qmbstw1ifFuGf1CnHAmLiLJRZiGViZcaYgjkwiejRUafjk",
+        "bzz-raw://0130b2228727dc7abe6956387cc63c1d5eb9dd9a70e3cbb17ec56dc562d0e5b5",
+        "dweb:/ipfs/QmdrwMixk61CNGPe5xLxicQp58rnpZvT82Bzse1tdFhEV4",
       ],
     },
-    "contracts/lendingPool/interfaces/IERC20.sol": {
+    "contracts/DKLOAN/interface/ISwapRouter.sol": {
       keccak256:
-        "0x659351d7e277c88410100765400346f6e1053dfa8b242a38704582f31e8ce90b",
+        "0xaee0c5d650b2f9e5b165bbe991579aa42a4ba7959c056a6fdab425e4f9c94e46",
       license: "GPL-3.0",
       urls: [
-        "bzz-raw://bf0fe9077392c771cf933354a64b7a43d067414d71df3b970ff3408f347cd62b",
-        "dweb:/ipfs/QmafUVnBc8hWWUGVUCsGit7eACaqLaeqxKc3FAmJqvfogf",
+        "bzz-raw://26f0db4c957776125a4e22470ebce9ef68e81979911d3c1f9412d86dc96dad85",
+        "dweb:/ipfs/QmRGRKKTGDwvKSNCY4UT65Zx6EEEnc7Up2HbPPJEmRHUBc",
       ],
     },
-    "contracts/lendingPool/interfaces/IPRICE.sol": {
+    "contracts/DKLOAN/interface/Price.sol": {
       keccak256:
-        "0x515088515b77013334d65290cc2a64cf0c3046f6eb1ecd1de48072c977e3cb8b",
+        "0xf032e24ee75d763afd7392abea9a8d3f36b223e23b433d205b735353ae9d2d33",
       license: "GPL-3.0",
       urls: [
-        "bzz-raw://8481282735c8de9f0be68f950512d4a294a4cea395e96b716315dac854263559",
-        "dweb:/ipfs/QmQhu2E3yQHcR9iVoxWkFDdfVvGsuirk3yDd7Kh1LBNLA8",
+        "bzz-raw://b69b20cf0d3cad842eca0b4e09d4dd9b87cd9b35162ae3bd08ea15aa99567dcf",
+        "dweb:/ipfs/QmUG81ej7hDri9wYj2xyeEFcaaqMK5SHrhioqPUTnc8u5H",
       ],
     },
-    "contracts/lendingPool/interfaces/ISwapRouter.sol": {
+    "contracts/DKLOAN/loan.sol": {
       keccak256:
-        "0x9c32d10dd25ec7731877fc474716c5d1593b67acd98cfe91ed927ea54aad7d72",
+        "0x69cdc75c2fd8920bb2091e636880fb7ba0cf9d6a62e870bbc578ecbe75ef85c7",
       license: "GPL-3.0",
       urls: [
-        "bzz-raw://caa0d42a9f4349d3f6203c630b81eb20efec02e91e91e2fa2a3f72b064c4e55e",
-        "dweb:/ipfs/Qme5MbNpmqz4hYqT5RHpGSJWfm2ifmcJbQoU8WHfBv2aLv",
+        "bzz-raw://fe81b8c8c961e7df4f353d29529d9a9213c5a49c6138951fe99a76e1a27aa2bb",
+        "dweb:/ipfs/Qmd8yFFheB61zPt4yc87qJ2GtdbdxoGRPyFbrVXBFXi45R",
       ],
     },
   },

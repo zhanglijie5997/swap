@@ -14,13 +14,13 @@ import { useChainId } from "wagmi";
 import { parseUnits } from "viem";
 import { useContractWrite } from "wagmi";
 import { dkAddress, usdtAddress } from "../../config/config";
+import { translateAbiToken } from "../../config/translate";
 function Swap() {
   const [active, setActive] = useState(0);
   const [block, setBlock] = useState(0)
   const blockNumber = useBlockNumber({
     staleTime: 2_000,
     onBlock(blockNumber) {
-      console.log('New block: ', blockNumber)
       setBlock(Number(blockNumber))
     },}
   );
@@ -56,14 +56,21 @@ function Swap() {
 
   const allowance = useErc20Allowance({
     address: usdtAddress,
-    args: [address,usdtAddress],
+    args: [address, translateAbiToken],
     chainId,
     onSuccess(v) {
-      console.log(v);
+      console.log(v, "授权状态");
     },
     onError(e) {
       console.log(e, "eee");
     }
+  })
+
+  const approve = useContractWrite({
+    address: usdtAddress,
+    abi: erc20ABI,
+    functionName: "approve",
+    args: [translateAbiToken, parseUnits('1000', 9)],
   })
 
   const authorizationStatus = useMemo(() => {
@@ -90,12 +97,7 @@ function Swap() {
     args: [dkAddress, parseUnits('100', 9)],
   })
   
-  const approve = useContractWrite({
-    address: usdtAddress,
-    abi: erc20ABI,
-    functionName: "approve",
-    args: [usdtAddress, parseUnits('100', 9)],
-  })
+  
 
 
   const saveDisabled = useMemo(() => {
@@ -115,7 +117,8 @@ function Swap() {
       setSaveLoading(true);
       console.log(BigInt(+saveValue) , "BigInt(+saveValue) ");
       const res = await translateAbi.depositMoney.writeAsync({
-        args: [BigInt(+saveValue) ]
+        // args: [+saveValue]
+        args: [parseUnits(saveValue, 18)]
       })
     } catch (error) {
       message.error({
@@ -165,15 +168,21 @@ function Swap() {
   const init = async() => {
     try {
       await slepp(1000);
-      console.log(translateAbi.calculate.data);
+      console.log(translateAbi.calculate.data, "已存");
       if (translateAbi.calculate.data) {
-        setDrawConfig(translateAbi.calculate.data?.map(e => Number(e)))
+      
+        setDrawConfig(translateAbi.calculate.data?.map((e, i) => {
+          if (i != 0) {
+            return Number(e)
+          }
+          return Number(e) / 10 ** 18;
+        }))
       }
       console.log("getDepositIncom");
       console.log(allowance, Number(allowance.data), "res----");
       // await approve.writeAsync()
 
-      setGetDepositIncomeData(translateAbi.getDepositIncome.data.map(e => Number(e)))
+      // setGetDepositIncomeData(translateAbi.getDepositIncome.data.map(e => Number(e)))
     } catch (error) {
       console.log(error);
     }
