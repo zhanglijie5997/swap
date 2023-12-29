@@ -15,7 +15,8 @@ import { mainnet, bsc } from "wagmi/chains";
 import  { routerName } from "./router/router";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-const { chains } = configureChains([mainnet, bsc], [publicProvider()]);
+import Language from "./components/language";
+const { chains } = configureChains([ bsc], [publicProvider()]);
 function App() {
   const navigate = useNavigate();
   const local = useLocation();
@@ -45,7 +46,8 @@ function App() {
         <div className="app">
           <header className="flex glass w-full h-[90px] sm:h-[60px] justify-between items-center border-y bg-[url('/WaveBG3.png')]">
             <img src="/WechatIMG1422.jpg" alt="" className="icon h-12 ml-2" />
-            <div className="mr-2">
+            <div className="mr-2 flex items-center">
+              <Language />
               <ConnectButton ></ConnectButton>
             </div>
           </header>

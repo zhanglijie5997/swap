@@ -63,7 +63,7 @@ function Home() {
   }, 300), [store.baseData, dayChecked, checked, loading])
 
   return (
-    <div className="home">
+    <div className="home  mt-4">
       <div className="card">
         <div className="z-10 relative">
           <p className="border-b title flex justify-between items-end">
@@ -135,8 +135,8 @@ function Home() {
           {/* 当前钱包还未mint：mint按钮  当前钱包已经mint：领取收益按钮*/}
           <button
             onClick={handleMint}
-            className={`btn  w-full mx-auto mt-2 font-bold text-xl flex justify-center items-center ${
-              mintStatus ? "btn-success" : "radio-primary btn-outline subtitle "
+            className={`btn btn-primary w-full mx-auto mt-2  flex justify-center items-center ${
+              mintStatus ? "btn-success" : "radio-primary  "
             }`}
           >
             { loading ? <span className="loading loading-dots loading-xs"></span> : null}
