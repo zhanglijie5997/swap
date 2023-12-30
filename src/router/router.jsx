@@ -7,6 +7,7 @@ import Home from "../views/home/home";
 import Swap from "../views/swap/swap";
 import Layout from "../App";
 import Test from "../views/test/test";
+import { Navigate } from "react-router-dom";
 export const routerName = {
   home: "",
   swap: "swap",
@@ -14,7 +15,6 @@ export const routerName = {
 
 const router = createBrowserRouter([
   {
-    
     path: "/",
     element: <Layout />,
     children: [
@@ -31,15 +31,15 @@ const router = createBrowserRouter([
         path: "test",
         element: <Test />,
       },
-
+      {
+        path: "*",
+        element: <Navigate to="" />,
+      },
     ],
   },
-  {
-    path: "/*",
-    element: <Layout />,
-  }
 ], {
-  basename: '/defi'
+  basename: '/defi',
+
 });
 
 export default function Router() {
