@@ -14,11 +14,13 @@ export const routerName = {
 
 const router = createBrowserRouter([
   {
+    
     path: "/",
     element: <Layout />,
     children: [
       {
         path: "",
+        index: true,
         element: <Home />,
       },
       {
@@ -29,10 +31,17 @@ const router = createBrowserRouter([
         path: "test",
         element: <Test />,
       },
+
     ],
   },
-]);
+  {
+    path: "/*",
+    element: <Layout />,
+  }
+], {
+  basename: '/defi'
+});
 
 export default function Router() {
-  return <RouterProvider router={router} fallbackElement={<p>Loading...</p>} />;
+  return <RouterProvider router={router}  fallbackElement={<p>Loading...</p>} />;
 }
