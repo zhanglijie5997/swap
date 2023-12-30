@@ -81,7 +81,7 @@ function Home() {
   useEffect(() => {
     createTimer();
     return () => {
-      clearInterval(timer);
+      clearInterval(timer.current);
     }
   }, [])
 

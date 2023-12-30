@@ -53,13 +53,13 @@ function Swap() {
       translateAbi.calculate.refetch();
       translateAbi.getLoanUserInformation.refetch();
       translateAbi.getInterestRate.refetch();
-    },2000);
+    },5000);
   }
 
   useEffect(() => {
     createTimer();
     return () => {
-      clearInterval(timer);
+      clearInterval(timer.current);
     }
   }, [])
 
