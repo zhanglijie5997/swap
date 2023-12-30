@@ -8,7 +8,9 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+  base: './',
   build: {
+      
       assetsInlineLimit: 10240,
       manifest: true, // 构建后将会生成 manifest.json 文件，映射没有被 hash 的资源文件名和它们的 hash 版本。可以为一些服务器框架渲染时提供正确的资源引入链接。
       rollupOptions: {
