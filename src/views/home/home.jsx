@@ -3,7 +3,7 @@ import { Radio } from "antd";
 import "./home.scss";
 import { useStore } from "../../store/store";
 import useAbi from "../../hook/connect.hook";
-import { debounce, slepp, unParse18 } from "../../utils/utils";
+import { debounce, pledgeDKNumber, slepp, unParse18 } from "../../utils/utils";
 import { useAccount } from "wagmi";
 import { dkAddress, usdtAddress, wagmiContractToken } from "../../config/config";
 import { erc20ABI, useErc20Allowance } from "../../generated";
@@ -12,6 +12,7 @@ import { useContractWrite } from "wagmi";
 import { maxUint256 } from "viem";
 import { useMemo } from "react";
 import useTranslateAbi from "../../hook/translate.hook";
+import { getCoin } from "../../service/service";
 const plainOptions = ["5USDT", "10USDT"];
 const giveBalance = {
   "[0,0]": 552,
@@ -29,6 +30,7 @@ function Home() {
   const store = useStore();
   const [isBusy, setIsBusy] = useState(false);
   const chainId = useChainId();
+  const [coinData, setCoinData] = useState(0);
   const getAward = useMemo(() => {
     return connect.getAward.data ? connect.getAward.data.map(e => e.toString()): [0,0,0];
   }, [connect.getAward.data])
@@ -56,6 +58,15 @@ function Home() {
     // const res = await connect.getUserTokenNumber();
     // console.log(res, "resss");
   }
+
+  const getCoinPrice = async () => {
+    const res = await getCoin();
+    setCoinData(res.data);
+  }
+
+  useEffect(() => {
+    getCoinPrice();
+  }, [])
 
   useEffect(() => {
     console.log(address);
@@ -123,6 +134,10 @@ function Home() {
     }
   }, 300), [store.baseData, dayChecked, checked, loading])
 
+  const needDk = useMemo(() => {
+    return coinData != 0 ? pledgeDKNumber((checked == 0 ? 5 : 10), coinData) : 0
+  }, [checked, coinData])
+
   return (
     <div className="home  mt-4">
       <div className="card">
@@ -145,7 +160,7 @@ function Home() {
                   value={0}
                   onChange={() => onchange(0)}
                 />
-                <span className="value">500USDT</span>
+                <span className="value">5USDT</span>
               </li>
               <li className="item flex items-center justify-center" onClick={() => onchange(1)}>
                 <input
@@ -157,7 +172,7 @@ function Home() {
                   onChange={() => onchange(1)}
                   checked={checked == 1}
                 />
-                <span className="value">1000USDT</span>
+                <span className="value">10USDT</span>
               </li>
             </ul>
           </div>
@@ -196,6 +211,11 @@ function Home() {
           <div>
             <p className="px-2 pt-2 text-gray-50 subtitle">收益额（USDT）:</p>
             <p className="px-2 pt-2 text-lg font-bold">{giveBalance[`[${checked},${dayChecked}]`]}USDT</p>
+          </div>
+          <div>
+            <p className="px-2 pt-2 text-gray-50 subtitle">所需数量（DK）:</p>
+            {/* TODO: */}
+            <p className="px-2 pt-2 text-lg font-bold">{ needDk }DK</p>
           </div>
           {/* 当前钱包还未mint：mint按钮  当前钱包已经mint：领取收益按钮*/}
           {

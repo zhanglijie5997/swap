@@ -20,8 +20,13 @@ export default defineConfig({
           // }
       },
       terserOptions: {
+          compress: {
+            drop_console: false,
+            drop_debugger: false
+          },
           safari10: true, // 解决 Safari 10/11 循环范围和await. 见safari10在选择mangle 和format了解详细信息。
-      }
+      },
+      
   },
   server: {
     host: '0.0.0.0',
@@ -40,6 +45,6 @@ export default defineConfig({
       ]
     }
   },
-
+  
 
 })

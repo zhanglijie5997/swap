@@ -8,7 +8,7 @@ import { mainnet, polygon, optimism, arbitrum, base, zora, bsc } from 'wagmi/cha
 import { publicProvider } from 'wagmi/providers/public';
 import { ConfigProvider, theme } from "antd";
 import Router from "./router/router.jsx";
-const { chains, publicClient } = configureChains(
+const { chains, publicClient, webSocketPublicClient } = configureChains(
   [bsc, mainnet],
   [
     publicProvider()
@@ -25,6 +25,7 @@ const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
+  webSocketPublicClient,
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(

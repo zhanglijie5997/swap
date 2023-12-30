@@ -232,14 +232,10 @@ function Swap() {
     })
   }
 
-  const getCoinPrice = async () => {
-    const res = await getCoin();
-    console.log(res);
-  }
+  
 
   useEffect(() => {
     init();
-    getCoinPrice();
   }, [])
 
   return (
