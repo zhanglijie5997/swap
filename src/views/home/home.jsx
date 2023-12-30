@@ -12,7 +12,7 @@ import { useContractWrite } from "wagmi";
 import { maxUint256 } from "viem";
 import { useMemo } from "react";
 import useTranslateAbi from "../../hook/translate.hook";
-const plainOptions = ["500USDT", "1000USDT"];
+const plainOptions = ["5USDT", "10USDT"];
 const giveBalance = {
   "[0,0]": 552,
   "[0,1]": 1104,
