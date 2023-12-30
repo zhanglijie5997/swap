@@ -8,7 +8,6 @@ export default defineConfig({
   plugins: [
     react(),
   ],
-  base: './',
   build: {
       
       assetsInlineLimit: 10240,

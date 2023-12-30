@@ -30,7 +30,7 @@ function App() {
       path: routerName.home,
     },
     {
-      name: "swap",
+      name: "借贷",
       path: routerName.swap,
     },
   ]);

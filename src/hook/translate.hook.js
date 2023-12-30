@@ -61,7 +61,10 @@ const useTranslateAbi = () => {
   const getLoanUserInformation = useContractRead({
     ...baseConfig,
     functionName: "getLoanUserInformation",
-    args: [address]
+    args: [address],
+    onSuccess(v) {
+      console.log('v', '存入成功');
+    }
   })
   // 返回存款月化收益，和邀请人的月化收益 以及贷款月化
   // const getDepositIncome = useContractRead({

@@ -13,6 +13,7 @@ import { maxUint256 } from "viem";
 import { useMemo } from "react";
 import useTranslateAbi from "../../hook/translate.hook";
 import { getCoin } from "../../service/service";
+import { useRef } from "react";
 const plainOptions = ["5USDT", "10USDT"];
 const giveBalance = {
   "[0,0]": 552,
@@ -31,6 +32,8 @@ function Home() {
   const [isBusy, setIsBusy] = useState(false);
   const chainId = useChainId();
   const [coinData, setCoinData] = useState(0);
+  const timer = useRef();
+
   const getAward = useMemo(() => {
     return connect.getAward.data ? connect.getAward.data.map(e => e.toString()): [0,0,0];
   }, [connect.getAward.data])
@@ -65,6 +68,22 @@ function Home() {
       setCoinData(res.data);
     }
   }
+
+  const createTimer = () => {
+    timer.current =  setInterval(() => {
+      connect.balanceOf.refetch();
+      connect.tokenOfOwnerByIndex.refetch();
+      connect.getAwardQuantity.refetch();
+      connect.getAward.refetch();
+    },2000);
+  }
+
+  useEffect(() => {
+    createTimer();
+    return () => {
+      clearInterval(timer);
+    }
+  }, [])
 
   useEffect(() => {
     getCoinPrice();
@@ -211,8 +230,8 @@ function Home() {
           </div>
           {/* 动态展示mint后的每日收益和总收益 */}
           <div>
-            <p className="px-2 pt-2 text-gray-50 subtitle">收益额（USDT）:</p>
-            <p className="px-2 pt-2 text-lg font-bold">{giveBalance[`[${checked},${dayChecked}]`]}USDT</p>
+            <p className="px-2 pt-2 text-gray-50 subtitle">预计收益额（USDT）:</p>
+            <p className="px-2 pt-2 text-lg font-bold">{giveBalance[`[${checked},${dayChecked}]`]/100}USDT</p>
           </div>
           <div>
             <p className="px-2 pt-2 text-gray-50 subtitle">所需数量（DK）:</p>

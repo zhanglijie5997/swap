@@ -47,10 +47,27 @@ function Swap() {
   const [authorizationed, setAuthorizationed] = useState(true);
     // 借钱输入框
   const [lendoutData, setLendoutData] = useState('');
+  const timer = useRef();
+  const createTimer = () => {
+    timer.current =  setInterval(() => {
+      translateAbi.calculate.refetch();
+      translateAbi.getLoanUserInformation.refetch();
+      translateAbi.getInterestRate.refetch();
+    },2000);
+  }
+
+  useEffect(() => {
+    createTimer();
+    return () => {
+      clearInterval(timer);
+    }
+  }, [])
 
   const handleSubmit = () => {
     dialog.current.showModal();
   }
+
+  
 
   const handleSaveInput = (value) => {
     const _current = value;
@@ -132,6 +149,7 @@ function Swap() {
         // args: [+saveValue]
         args: [parseUnits(saveValue, 18)]
       })
+      
     } catch (error) {
       message.error({
         duration: 3,
@@ -317,12 +335,10 @@ function Swap() {
               </p>
             </div>
             {/* 提取按钮 */}
-            <Anthorization>
-              <button className="btn btn-primary w-full mt-2" onClick={handleGive}>
-                {giveLoading && <span className="loading loading-dots loading-xs"></span>  }
-                <span>提取</span>
-              </button>
-            </Anthorization>
+            { drawConfig[1] + drawConfig[0] > 0 && <button className="btn btn-primary w-full mt-2" onClick={handleGive}>
+              {giveLoading && <span className="loading loading-dots loading-xs"></span>  }
+              <span>提取</span>
+            </button>}
             <div className="border-b my-2"></div>
             {/* 存入规则说明 */}
             <div className="px-1">
@@ -385,7 +401,7 @@ function Swap() {
                 赎回质押物(DK):
               </p>
               <p className="font-bold text-xl pl-2">
-                <span>{interest[1] + interest[3]}</span>
+                <span>{+interest[1] + +interest[3]}</span>
               </p>
             </div>
             {/* 展示赎回剩余期限(自借出计起 30天未赎回 质押物自动卖放池子里) */}
@@ -399,7 +415,7 @@ function Swap() {
               </p>
             </div>
             {
-              dkAllowance.data == 0 ?<button className="btn btn-primary flex items-center w-full mt-2" onClick={authorizationDK}>授权</button> :<button className="btn btn-primary w-full mt-2" onClick={handleSubmit}>
+              +interest[1] + +interest[3] > 0 && <button className="btn btn-primary w-full mt-2" onClick={handleSubmit}>
                 { redeem && <span className="loading loading-dots loading-xs"></span>}
                 <span>赎回({interest[1] + interest[3]}DK)</span>
               </button>

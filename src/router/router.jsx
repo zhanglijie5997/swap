@@ -8,12 +8,13 @@ import Swap from "../views/swap/swap";
 import Layout from "../App";
 import Test from "../views/test/test";
 import { Navigate } from "react-router-dom";
+import { createHashRouter } from "react-router-dom";
 export const routerName = {
   home: "",
   swap: "swap",
 };
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <Layout />,
@@ -37,10 +38,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-], {
-  basename: '/defi',
-
-});
+]);
 
 export default function Router() {
   return <RouterProvider router={router}  fallbackElement={<p>Loading...</p>} />;
