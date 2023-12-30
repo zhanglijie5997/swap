@@ -59,9 +59,12 @@ const useAbi = () => {
   })
   //   通过地址和索引获得这个是通过钱包地址，和索引 获得用户NFT ID
 
-  const tokenOfOwnerByIndex = useContractWrite({
+  const tokenOfOwnerByIndex = useContractRead({
     ...baseConfig,
     functionName: "tokenOfOwnerByIndex",
+    args: [
+      address, Number(balanceOf.data) -1  // 上面的balanceOf.data就是用户的NFT数量，这里要减1，因为索引是从0开�
+    ]
   })
 
   const TwoMint = useContractWrite({
@@ -69,9 +72,12 @@ const useAbi = () => {
     functionName: "TwoMint",
   })
   // 看累积奖励数量和奖励天数 -> 收益额
-  const getAwardQuantity = useContractWrite({
+  const getAwardQuantity = useContractRead({
     ...baseConfig,
     functionName: "getAwardQuantity",
+    args: [
+      tokenOfOwnerByIndex.data// 上面的balanceOf.data就是用户的NFT数量，这里要减1，因为索引是从0开�
+    ]
   });
 
   /** 存钱 */
@@ -85,25 +91,16 @@ const useAbi = () => {
     functionName: "getAward",
   })
 
-  const getUserTokenNumber =  async() => {
-    //   const _userBalance = Number(balanceOf.data);
-    console.log(balanceOf, "balanceOf");
-      try {
-        console.log( Number(balanceOf.data) , tokenOfOwnerByIndex, address, balanceOf.data, "tokenOfOwnerByIndex");
-        return Number(balanceOf.data) != 0 ? tokenOfOwnerByIndex.writeAsync({
-            args: [address, Number(balanceOf.data) ]
-        }):null;
-      } catch (error) {
-        console.log(222);
-        return null;
-      }
-  }
+  const withdrawRewards = useContractWrite({
+    ...baseConfig,
+    functionName: "withdrawRewards",
+  })
 
   
 
   return {
-    addAward, getAward,
-    OneMint, TwoMint,  getAwardQuantity, balanceOf, getUserTokenNumber
+    addAward, getAward, getAwardQuantity,
+    OneMint, TwoMint, balanceOf, withdrawRewards, tokenOfOwnerByIndex
   };
 };
 

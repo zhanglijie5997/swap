@@ -3,7 +3,7 @@ import { Radio } from "antd";
 import "./home.scss";
 import { useStore } from "../../store/store";
 import useAbi from "../../hook/connect.hook";
-import { debounce, slepp } from "../../utils/utils";
+import { debounce, slepp, unParse18 } from "../../utils/utils";
 import { useAccount } from "wagmi";
 import { dkAddress, usdtAddress, wagmiContractToken } from "../../config/config";
 import { erc20ABI, useErc20Allowance } from "../../generated";
@@ -11,6 +11,7 @@ import { useChainId } from "wagmi";
 import { useContractWrite } from "wagmi";
 import { maxUint256 } from "viem";
 import { useMemo } from "react";
+import useTranslateAbi from "../../hook/translate.hook";
 const plainOptions = ["500USDT", "1000USDT"];
 const giveBalance = {
   "[0,0]": 552,
@@ -21,7 +22,7 @@ const giveBalance = {
 function Home() {
   const [checked, setChecked] = useState(0);
   const [dayChecked, setDayChecked] = useState(0);
-  const [mintStatus, setMintStatus] = useState(false);
+  // const [mintStatus, setMintStatus] = useState(false);
   const [loading, setLoading] = useState(false);
   const {address} = useAccount()
   const connect = useAbi();
@@ -29,9 +30,18 @@ function Home() {
   const [isBusy, setIsBusy] = useState(false);
   const chainId = useChainId();
   const getAward = useMemo(() => {
-    console.log(connect.getAward.data, "connect.getAward.data;");
     return connect.getAward.data ? connect.getAward.data.map(e => e.toString()): [0,0,0];
   }, [connect.getAward.data])
+
+  const mintStatus = useMemo(() => {
+    return connect.getAwardQuantity.data ? unParse18(Number(connect.getAwardQuantity.data[0]) * Number(connect.getAwardQuantity.data[1]))  : 0;
+  }, [connect.getAward.data])
+
+  const canMint = useMemo(() => {
+    console.log(connect.getAward.data, "connect.getAward.data;");
+    return connect.getAward.data && unParse18(Number(connect.getAward.data[2]))   >= 5.52
+  }, [connect.getAward.data])
+
   const onchange = (value) => {
     console.log(1);
     setChecked(value);
@@ -43,14 +53,15 @@ function Home() {
 
   const init  = async() => {
     await slepp(400)
-    const res = await connect.getUserTokenNumber();
-    console.log(res, "resss");
+    // const res = await connect.getUserTokenNumber();
+    // console.log(res, "resss");
   }
 
   useEffect(() => {
     console.log(address);
     if (address) {
-      init();
+      // init();
+      console.log(connect.tokenOfOwnerByIndex.data, "connect.tokenOfOwnerByIndex.data");
     }
   }, [address])
 
@@ -86,14 +97,25 @@ function Home() {
     if (loading) return;
     setLoading(true);
     console.log(store.baseData.state.data.account);
-    await connect.getUserTokenNumber();
     
     try {
+      if(mintStatus != 0) {
+        console.log(connect.balanceOf.data, "取出");
+        await connect.withdrawRewards.writeAsync({
+          args: [connect.tokenOfOwnerByIndex.data]
+        })
+        return;
+      }
+      if (!canMint) {
+        return;
+      }
       if (dayChecked == 0) {
         await connect.OneMint.writeAsync()
       }else {
         await connect.TwoMint.writeAsync()
       }
+      await connect.getUserTokenNumber();
+
     } catch (error) {
       
     } finally {
@@ -116,6 +138,7 @@ function Home() {
               <li className="item flex items-center justify-center" onClick={() => onchange(0)}>
                 <input
                   type="radio"
+                  disabled={mintStatus != 0}
                   name="radio-2"
                   className="radio radio-primary"
                   checked={checked == 0}
@@ -127,6 +150,7 @@ function Home() {
               <li className="item flex items-center justify-center" onClick={() => onchange(1)}>
                 <input
                   type="radio"
+                  disabled={mintStatus != 0}
                   value={1}
                   name="radio-2"
                   className="radio radio-primary"
@@ -146,6 +170,7 @@ function Home() {
                 <input
                   type="radio"
                   name="radio-3"
+                  disabled={mintStatus != 0}
                   className="radio radio-primary"
                   checked={dayChecked == 0}
                   value={0}
@@ -157,6 +182,7 @@ function Home() {
                 <input
                   type="radio"
                   value={1}
+                  disabled={mintStatus != 0}
                   name="radio-3"
                   className="radio radio-primary"
                   checked={dayChecked == 1}
@@ -176,11 +202,11 @@ function Home() {
             usdtAllowance.data == 0 ? <button className="btn btn-primary w-full mx-auto mt-2" onClick={handleAuthorization}>授权</button> :<button
             onClick={handleMint}
             className={`btn btn-primary w-full mx-auto mt-2  flex justify-center items-center ${
-              mintStatus ? "btn-success" : "radio-primary  "
+              mintStatus ? "" : "radio-primary  "
             }`}
           >
             { loading ? <span className="loading loading-dots loading-xs"></span> : null}
-            {mintStatus ? "领取收益" : "Mint"}
+            {mintStatus  != 0 ? `领取收益${mintStatus}USDT` : `${canMint ? 'Mint': 'Mint条件不足'}`}
           </button>
           }
           
