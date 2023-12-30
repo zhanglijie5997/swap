@@ -129,7 +129,7 @@ function Home() {
         <div className="z-10 relative">
           <p className="border-b title flex justify-between items-end">
             <span>全网质押</span>
-            <span className="text-gray-50 subtitle number">剩余数量：{getAward[2]}</span>
+            <span className="text-gray-50 subtitle number">剩余数量：{unParse18( +getAward[2])}USDT</span>
           </p>
           {/* 选择mint 价值500U的/1000U的 */}
           <div className="tabs border-b">
