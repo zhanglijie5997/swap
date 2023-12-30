@@ -61,7 +61,9 @@ function Home() {
 
   const getCoinPrice = async () => {
     const res = await getCoin();
-    setCoinData(res.data);
+    if (res.data) {
+      setCoinData(res.data);
+    }
   }
 
   useEffect(() => {
