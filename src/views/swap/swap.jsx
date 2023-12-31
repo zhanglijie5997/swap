@@ -237,7 +237,9 @@ function Swap() {
     })
   }
 
-  
+  const lendoutStatus = useMemo(() => {
+    return +lendoutData > 0;
+  }, [lendoutData])
 
   useEffect(() => {
     // init();
@@ -378,7 +380,9 @@ function Swap() {
 
             {/* 借出按钮 先授权*/}
             {
-              dkAllowance.data == 0 ? <button className="btn btn-primary flex items-center w-full mt-2" onClick={authorizationDK}>授权</button> : <button className="btn btn-primary w-full mt-2" onClick={lendout}>借出</button>
+              dkAllowance.data == 0 ? 
+                <button className="btn btn-primary flex items-center w-full mt-2" onClick={authorizationDK}>授权</button> : 
+                <button className={`btn btn-primary w-full mt-2 ${lendoutStatus ? '':'btn-disabled'} `} onClick={lendout}>借出</button>
             } 
             <div className="border-b my-2"></div>
 
