@@ -69,22 +69,6 @@ function Home() {
     }
   }
 
-  const createTimer = () => {
-    timer.current =  setInterval(() => {
-      connect.balanceOf.refetch();
-      connect.tokenOfOwnerByIndex.refetch();
-      connect.getAwardQuantity.refetch();
-      connect.getAward.refetch();
-    },2000);
-  }
-
-  useEffect(() => {
-    createTimer();
-    return () => {
-      clearInterval(timer.current);
-    }
-  }, [])
-
   useEffect(() => {
     getCoinPrice();
   }, [])

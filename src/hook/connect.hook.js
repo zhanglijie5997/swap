@@ -55,7 +55,9 @@ const useAbi = () => {
   const balanceOf = useContractRead({
     ...baseConfig,
     functionName: "balanceOf",
-    args: [address]
+    args: [address],
+    watch: true
+
   })
   //   通过地址和索引获得这个是通过钱包地址，和索引 获得用户NFT ID
 
@@ -64,7 +66,9 @@ const useAbi = () => {
     functionName: "tokenOfOwnerByIndex",
     args: [
       address, Number(balanceOf.data) -1  // 上面的balanceOf.data就是用户的NFT数量，这里要减1，因为索引是从0开�
-    ]
+    ],
+    watch: true
+
   })
 
   const TwoMint = useContractWrite({
@@ -77,7 +81,9 @@ const useAbi = () => {
     functionName: "getAwardQuantity",
     args: [
       tokenOfOwnerByIndex.data// 上面的balanceOf.data就是用户的NFT数量，这里要减1，因为索引是从0开�
-    ]
+    ],
+    watch: true
+
   });
 
   /** 存钱 */
@@ -89,6 +95,8 @@ const useAbi = () => {
   const getAward = useContractRead({
     ...baseConfig,
     functionName: "getAward",
+    watch: true
+
   })
 
   const withdrawRewards = useContractWrite({

@@ -34,10 +34,6 @@ function Swap() {
   const [giveLoading, setGiveLoading] = useState(false);
   // 0.返回借usdt数量,1,质押DK数量,2.质押的DK区块高度数量,3.产生的利息
   const [interest, setInterest] = useState([0,0,0,0]);
-  // 0.返回存款月化收益，1.邀请人的月化收益 2.以及贷款月化
-  const [getDepositIncomeData, setGetDepositIncomeData] = useState([0,0,0])
-  // [已存, 可提取]
-  const [drawConfig, setDrawConfig] = useState([0,0])
   /** @type {import('react').RefObject<HTMLDivElement>} */
   const dialog = useRef(null)
   const abi = useAbi();
@@ -48,18 +44,12 @@ function Swap() {
     // 借钱输入框
   const [lendoutData, setLendoutData] = useState('');
   const timer = useRef();
-  const createTimer = () => {
-    timer.current =  setInterval(() => {
-      translateAbi.calculate.refetch();
-      translateAbi.getLoanUserInformation.refetch();
-      translateAbi.getInterestRate.refetch();
-    },5000);
-  }
+  
 
   useEffect(() => {
-    createTimer();
+    // createTimer();
     return () => {
-      clearInterval(timer.current);
+      // clearInterval(timer.current);
     }
   }, [])
 
@@ -195,40 +185,27 @@ function Swap() {
       console.log(error);
     }
   }
-  
-  const init = async() => {
-    try {
-      
-      await slepp(1000);
-      console.log(dkAllowance.data,"已存");
-      // 收益率
-      const _ = Number(translateAbi.getInterestRate.data) / 10000 * Number(translateAbi.calculate.data[0])  / 10 ** 18; 
-      setGetDepositIncomeData((value) => {
-        return value.map((e, i) => {
-          if (i == 0) {
-            return _
-          }
-          return e;
-        })
-      })
-      if (translateAbi.calculate.data) {
-      
-        setDrawConfig(translateAbi.calculate.data?.map((e, i) => {
-          if (i != 0) {
-            return Number(e)
-          }
-          return unParse18(Number(e)) ;
-        }))
-      }
-      console.log("getDepositIncom");
-      console.log(allowance, Number(allowance.data), "res----");
-      // await approve.writeAsync()
-
-      // setGetDepositIncomeData(translateAbi.getDepositIncome.data.map(e => Number(e)))
-    } catch (error) {
-      console.log(error);
+  // 0.返回存款月化收益，1.邀请人的月化收益 2.以及贷款月化
+  const getDepositIncomeData = useMemo(() => {
+    if (!translateAbi.getInterestRate.data || !translateAbi.calculate.data) {
+      return [0,0,0];
     }
-  }
+    // 收益率
+    const _ = Number(translateAbi.getInterestRate.data) / 10000 * Number(translateAbi.calculate.data[0])  / 10 ** 18; 
+    return [_, 0,0]
+  }, [translateAbi.getInterestRate.data, translateAbi.calculate.data])
+  // [已存, 可提取]
+  const drawConfig = useMemo(() => {
+    if (!translateAbi.calculate.data) {
+      return [0,0]
+    }
+    return translateAbi.calculate.data.map((e, i) => {
+      if (i != 0) {
+        return Number(e)
+      }
+      return unParse18(Number(e)) ;
+    })
+  }, [translateAbi.calculate.data])
 
   const authorization = async() => {
     try {
@@ -253,7 +230,7 @@ function Swap() {
   
 
   useEffect(() => {
-    init();
+    // init();
   }, [])
 
   return (

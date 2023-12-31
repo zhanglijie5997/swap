@@ -29,6 +29,7 @@ const useTranslateAbi = () => {
     ...baseConfig,
     functionName: "calculate",
     args: [address],
+    watch: true
   });
   // 取出利息的
   const pickInterest = useContractWrite({
@@ -64,7 +65,9 @@ const useTranslateAbi = () => {
     args: [address],
     onSuccess(v) {
       console.log('v', '存入成功');
-    }
+    },
+    watch: true
+
   })
   // 返回存款月化收益，和邀请人的月化收益 以及贷款月化
   // const getDepositIncome = useContractRead({
@@ -75,7 +78,9 @@ const useTranslateAbi = () => {
   const getInterestRate = useContractRead({
     ...baseConfig,
     functionName: "getInterestRate",
-    args: [address]
+    args: [address],
+    watch: true
+
   })
   
   return {
