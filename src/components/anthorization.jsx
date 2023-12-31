@@ -36,12 +36,11 @@ function Anthorization(props) {
 
   const authorizationStatus = useMemo(() => {
     return Number(allowance.data) == 0 || !authorizationed;
-  }, [allowance, authorizationed])
+  }, [allowance.data, authorizationed])
 
   const authorization = async() => {
     try {
         const res = await approve.writeAsync();
-        allowance.refetch();
     } catch (error) {
         message.error(error.message);
     }
