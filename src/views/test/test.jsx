@@ -26,7 +26,7 @@ export default function SendTransaction() {
   })
 
   const approve = useErc20Approve({
-    // address: ""
+    
   })
 
   return (

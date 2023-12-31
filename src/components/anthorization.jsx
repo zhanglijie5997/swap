@@ -17,6 +17,7 @@ function Anthorization(props) {
     address: usdtAddress,
     args: [address, translateAbiToken],
     chainId,
+    watch: true,
     onSuccess(v) {
       console.log(v, "授权状态");
     },

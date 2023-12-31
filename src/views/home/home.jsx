@@ -85,6 +85,7 @@ function Home() {
     address: dkAddress,
     args: [address,wagmiContractToken],
     chainId,
+    watch: true,
     onSuccess(v) {
       console.log(v);
     },
