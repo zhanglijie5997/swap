@@ -29,7 +29,7 @@ const useTranslateAbi = () => {
     ...baseConfig,
     functionName: "calculate",
     args: [address],
-    watch: true
+    watch: true,
   });
   // 取出利息的
   const pickInterest = useContractWrite({

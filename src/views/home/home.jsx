@@ -81,6 +81,8 @@ function Home() {
     }
   }, [address])
 
+  // useEffect(() => {}, [])
+
   const usdtAllowance = useErc20Allowance({
     address: dkAddress,
     args: [address,wagmiContractToken],

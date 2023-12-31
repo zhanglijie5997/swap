@@ -17,6 +17,7 @@ import { dkAddress, usdtAddress } from "../../config/config";
 import { translateAbiToken } from "../../config/translate";
 import Anthorization from "../../components/anthorization";
 import { getCoin } from "../../service/service";
+import { useTransaction } from "wagmi";
 function Swap() {
   const [active, setActive] = useState(0);
   const [block, setBlock] = useState(0)
@@ -44,14 +45,10 @@ function Swap() {
     // 借钱输入框
   const [lendoutData, setLendoutData] = useState('');
   const timer = useRef();
-  
-
+    
   useEffect(() => {
-    // createTimer();
-    return () => {
-      // clearInterval(timer.current);
-    }
-  }, [])
+    console.log(translateAbi.calculate.isLoading, "translateAbi.calculate.isLoading");
+  }, [translateAbi.calculate.isLoading])
 
   const handleSubmit = () => {
     dialog.current.showModal();
@@ -120,15 +117,17 @@ function Swap() {
   }
 
   const saveDisabled = useMemo(() => {
-    return +saveValue < 100 || +saveValue > 5000;
+
+    return +saveValue <= 0;
+    // return +saveValue < 100 || +saveValue > 5000;
   }, [saveValue])
 
 
   // 存入 
   const handelSave =async () => {
-    // if (saveValue == "") {
-    //   return;
-    // }
+    if (+saveValue <= 0) {
+      return;
+    }
     // const _value = Number(saveValue);
     // if ((+saveValue < -1 || isNaN(Number(saveValue))) && saveDisabled) {
     //   return;
@@ -136,6 +135,7 @@ function Swap() {
     try {
       setSaveLoading(true);
       console.log(BigInt(+saveValue) , "BigInt(+saveValue) ");
+      message.loading('链上确认中...');
       const res = await translateAbi.depositMoney.writeAsync({
         // args: [+saveValue]
         args: [parseUnits(saveValue, 18)]
@@ -148,6 +148,7 @@ function Swap() {
       })
     } finally {
       setSaveLoading(false);
+
     }
   }
 
@@ -155,6 +156,7 @@ function Swap() {
   const handleGive = async() => {
     try {
       setGiveLoading(true);
+      message.loading('链上确认中,请勿重复操作...');
       await translateAbi.withdrawMoney.writeAsync();
     } catch (error) {
       
@@ -200,6 +202,7 @@ function Swap() {
     if (!translateAbi.calculate.data) {
       return [0,0]
     }
+    
     return translateAbi.calculate.data.map((e, i) => {
       if (i != 0) {
         return Number(e)
@@ -207,6 +210,12 @@ function Swap() {
       return unParse18(Number(e)) ;
     })
   }, [translateAbi.calculate.data])
+
+  useEffect(() => {
+    if (translateAbi.calculate.isFetched) {
+      message.destroy();
+    }
+  },[translateAbi.calculate.isSuccess])
 
   const authorization = async() => {
     try {
@@ -280,7 +289,7 @@ function Swap() {
             <Anthorization>
               <button 
               //  saveDisabled || saveLoading
-              className={`btn btn-primary  flex items-center w-full mt-2 ${ false? 'btn-disabled': ''}`} 
+              className={`btn btn-primary  flex items-center w-full mt-2 ${  saveDisabled || saveLoading? 'btn-disabled': ''}`} 
                 onClick={handelSave}>
                 {saveLoading && <span className="loading loading-dots loading-xs"></span>  }
                 <span>存入</span>
