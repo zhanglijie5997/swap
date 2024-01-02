@@ -1,4 +1,4 @@
-export const translateAbiToken = "0xD42ed63704d350dd95466965C0998D583C636f6C";
+export const translateAbiToken = "0xd782D48c6498De3adB45a5Bf260D561a99ee9Dbb";
 
 // interface LendingPool {
 //     //存款合约

@@ -1,4 +1,4 @@
-export const wagmiContractToken = "0xc826b17388BF144De8EF14323c299E0dD01D6CdA";
+export const wagmiContractToken = "0xD3Cb554b8aA19A687bA201f29A73876C77c6B315";
 
 export const dkAddress = "0xb5f6e4236591d1e68d93a40e24ebfe9e7cee7f7b";
 

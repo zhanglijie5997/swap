@@ -195,7 +195,7 @@ function Swap() {
     }
     // 收益率
     const _ = Number(translateAbi.getInterestRate.data) / 10000 * Number(translateAbi.calculate.data[0])  / 10 ** 18; 
-    return [_, 0,0]
+    return [_,  Number(translateAbi.getInterestRate.data),0]
   }, [translateAbi.getInterestRate.data, translateAbi.calculate.data])
   // [已存, 可提取]
   const drawConfig = useMemo(() => {
@@ -332,10 +332,11 @@ function Swap() {
             {/* 存入规则说明 */}
             <div className="px-1">
               <p className=" pt-2 text-gray-50 subtitle mb-2">
-              存入规则:
+              存入介绍:
               </p>
               <p className="text-md subtitle">
-                <span>1.存入生息</span>
+                <span>
+您可将您的资产(USDT)存入DK银行并获得4.0%月化基础收益，如您有5个有效推荐人则获得5.5%月化收益，本金随存随取，利息每十天可提取一次。</span>
               </p>
             </div>
           </div>
